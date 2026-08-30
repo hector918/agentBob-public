@@ -1,0 +1,6 @@
+# The runtime image carries NO torch, NO transformers, NO huggingface client — the
+# ggml binary is the whole inference stack and the weights are baked in as a GGUF.
+# This list is just the HTTP shim.
+fastapi
+uvicorn[standard]
+python-multipart

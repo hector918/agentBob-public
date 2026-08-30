@@ -1,0 +1,41 @@
+# Keep the build context tight — speeds image build, avoids leaking host state.
+
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Agent worktrees / local tooling state — stale copies of the tree (old
+# package layouts). Go's build already ignores dot-dirs and the multi-stage
+# build never ships them, but they bloat the build context (~10 MB).
+.claude/
+
+# Editor / IDE
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Local bob state — never inside the image (it's mounted at runtime).
+.bob/
+~/
+
+# The host-built binary — Dockerfile builds its own.
+bob
+
+# Logs / artifacts
+*.log
+tmp/
+state.db
+
+# Local secrets — never in the build context.
+.env
+*.env
+
+# Compose stuff (not needed inside the image)
+docker-compose*.yml
+Dockerfile*
+
+# Tests / docs (kept tiny so build context stays small; uncomment if you want
+# them inside the image for `bob` to bundle docs).
+# docs/

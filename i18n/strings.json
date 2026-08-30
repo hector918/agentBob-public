@@ -1,0 +1,1527 @@
+{
+  "intro.paused": {
+    "_note": "已暂停账号回落到 intro 时的文案 — flow/intro。",
+    "default": "Your account is currently paused, so I can't help right now. Please contact an admin to restore access.",
+    "zh": "你的账号目前已被暂停，暂时无法为你服务。请联系管理员恢复访问。"
+  },
+  "intro.group_dm_nudge": {
+    "_note": "群里对未审批/暂停发送者的中性引导:不在共享群公开披露账号状态(pending/paused),改私聊 — flow/intro (F151)。",
+    "default": "👋 Let's sort this out in a direct message — send me a DM and I'll help you get set up.",
+    "zh": "👋 我们私聊解决吧——给我发条私信，我来帮你开通。"
+  },
+  "intro.pending": {
+    "_note": "未授权发送者首次接触(onboarding-open 源)→ 已自动登记、等管理员开通 — flow/intro。",
+    "default": "Thanks — you're registered and waiting for an admin to grant access. Once they approve, I'll be able to help. Nothing more for you to do right now.",
+    "zh": "已收到——你已登记，正在等待管理员开通访问。通过后我就能为你服务了，暂时无需其他操作。"
+  },
+  "flow.agora.company_paused": {
+    "_note": "公司 agora 链暂停时给真人发送者的逐条 bounce — flow/agora",
+    "default": "⏸ This company is paused — your message wasn't processed; please send again later.",
+    "zh": "⏸ 这家公司暂停处理中，消息未处理，请稍后再发。"
+  },
+  "flow.agora.member_paused": {
+    "_note": "成员 inbox 暂停时给真人发送者的逐条 bounce — flow/agora (F161,可逆临时态,不改道 normal)",
+    "default": "⏸ This member is paused right now — your message wasn't processed; please send again later.",
+    "zh": "⏸ 这位成员暂停处理中，消息未处理，请稍后再发。"
+  },
+  "flow.agora.hidden_slash": {
+    "_note": "虚拟组 ^成员寻址后跟斜杠命令时的 bounce(命令不进 turn,裸发才走 dispatch) — flow/agora RunTurn",
+    "default": "Slash commands don't take ^member addressing — send the /command by itself (this one was not executed).",
+    "zh": "斜杠命令不用带 ^成员寻址——直接单发 /命令 即可（这条没有执行）。"
+  },
+  "flow.agora.ask_who": {
+    "_note": "虚拟组多成员、未指定时让真人挑成员的前缀(后面拼 ^名字 列表) — flow/agora askWhoText",
+    "default": "This group has several members — use ^name to pick who: ",
+    "zh": "本群有多位成员，请用 ^成员名 指定找谁："
+  },
+  "flow.router.no_flow_accepted": {
+    "_note": "无 flow 接收时的兜底回执(I8 one-finish) — flow/router notify",
+    "default": "(Can't handle this message right now — please try again later.)",
+    "zh": "（暂时无法处理这条消息，请稍后再试。）"
+  },
+  "flow.router.not_permitted": {
+    "_note": "选中的路径(如 agora 工作区)调用者无权限 → 拒绝不改道 — flow/router pick",
+    "default": "You're not authorized to use this here. Ask an admin if you need access.",
+    "zh": "你没有在这里使用它的权限。需要的话请找管理员开通。"
+  },
+  "system.local_banner": {
+    "_note": "本地 REPL 模式启动横幅 — sources/local/10-local.go",
+    "default": "bob — local chat. Type a message; /help for commands; Ctrl-D to exit.",
+    "zh": "bob —— 本地聊天。输入消息开始；/help 查看命令；Ctrl-D 退出。"
+  },
+  "system.bye": {
+    "_note": "本地 REPL 模式退出 — sources/local/10-local.go",
+    "default": "bye.",
+    "zh": "再见。"
+  },
+  "system.transient_dispatch_error": {
+    "_note": "scope 解析后 sid 解析遇 store 瞬时错误 — 消息已落盘待重试 — pipeline-session/10-submit.go (D6)",
+    "default": "⚠️ Temporary hiccup handling your message — it's queued and I'll retry shortly.",
+    "zh": "⚠️ 处理你的消息时出了点暂时的故障，已先存下，稍后自动重试。"
+  },
+  "system.session_closing_resend": {
+    "_note": "回复落在正在关闭的会话上 — 没法服务,提示重发(D17) — leaf/session/40-submit.go",
+    "default": "⚠️ That conversation is being closed, so I couldn't pick this up — please send it again.",
+    "zh": "⚠️ 那个会话正在关闭，这条没能接上——麻烦你重新发一次。"
+  },
+  "system.queue_queued": {
+    "_note": "busy 队列:turn 跑着时到达的首条消息已排队 — leaf/session/55-queue.go",
+    "default": "📥 Got it — I'm on the current task; this is queued and I'll get to it shortly.",
+    "zh": "📥 已收到 —— 我正在处理当前任务，这条先排队，稍后回复。"
+  },
+  "system.queue_ack_n": {
+    "_note": "busy 队列:running-count ack(%d=当前排队数 %d=上限) — leaf/session/55-queue.go",
+    "default": "📥 Got it — %d queued (up to %d).",
+    "zh": "📥 已收到 —— 当前排队 %d 条（上限 %d）。"
+  },
+  "system.queue_cleared": {
+    "_note": "busy 队列:drain turn 处理完排队批后的回执(%d=条数) — leaf/session/55-queue.go",
+    "default": "✅ Handled %d queued message(s).",
+    "zh": "✅ 已处理排队的 %d 条消息。"
+  },
+  "system.queue_full": {
+    "_note": "busy 队列溢出:超过上限被丢弃(%d=上限) — leaf/session/55-queue.go",
+    "default": "⚠️ Queue is full (max %d) — this message was dropped, please resend later.",
+    "zh": "⚠️ 排队已满（上限 %d 条），这条暂时没接住，请稍后重发。"
+  },
+  "system.turn.model_unavailable": {
+    "_note": "模型池无法服务本轮时的收尾 notice;lang 由本轮 UserText i18n.Detect 决定 — leaf/turn/10-core.go",
+    "default": "(The model is temporarily unavailable — please try again shortly.)",
+    "zh": "（模型暂时不可用，请稍后再试）"
+  },
+  "system.turn.context_too_long": {
+    "_note": "历史超出模型上下文窗口且已无法再压缩(近尾单独就超窗)时的收尾 notice;lang 由本轮 UserText i18n.Detect 决定 — leaf/turn/10-core.go",
+    "default": "This conversation has grown too long to continue — please start a new one (/new) or summarize what you need.",
+    "zh": "这段对话太长了，已无法继续——请开个新会话（/new）或概括一下你的需求。"
+  },
+  "system.turn.salvage_stock": {
+    "_note": "§6.7 tier-3 salvage 保底固定行(连 no-LLM action brief 都无工具可点名时) — leaf/turn/10-core.go/50-salvage.go",
+    "default": "(I couldn't produce a complete reply this time — please try again.)",
+    "zh": "（这次没能给出完整回复，请再试一次）"
+  },
+  "system.turn.persist_fail": {
+    "_note": "user/assistant-calls 行落库失败(I2/I10)或历史读取失败时的收尾 notice — leaf/turn/10-core.go/20-round.go",
+    "default": "(An internal storage error occurred and this operation didn't complete — please try again later.)",
+    "zh": "（出现内部存储错误，本次操作未能完成，请稍后再试）"
+  },
+  "system.turn.internal_error": {
+    "_note": "turn 级 panic 兜底(I16/§4.1 step 1) — leaf/turn/10-core.go",
+    "default": "(Internal error — please try again later.)",
+    "zh": "（内部错误，请稍后再试）"
+  },
+  "system.turn.cancelled_marker": {
+    "_note": "§4.3 已流式可见内容后被取消的截断标记(拼在 partial 尾部,非道歉) — leaf/turn/10-core.go/20-round.go",
+    "default": "\n\n(cancelled)",
+    "zh": "\n\n（已取消）"
+  },
+  "system.turn.stream_interrupted_marker": {
+    "_note": "§4.2 已流式可见内容后流中断的标记(拼在 partial 尾部) — leaf/turn/10-core.go/20-round.go",
+    "default": "\n\n(⚠️ Reply interrupted — please retry)",
+    "zh": "\n\n（⚠️ 回复中断，请重试）"
+  },
+  "system.email_batch_header": {
+    "_note": "合并多轮回复的邮件前缀（%d=消息条数）— leaf/stoma/sources/email/75-coalesce.go batchHeader",
+    "default": "(The following is a combined reply to the %d messages you just sent)\n\n",
+    "zh": "（以下是对你刚才 %d 条消息的合并回复）\n\n"
+  },
+  "email.subject.default": {
+    "_note": "兜底邮件主题(无 inbound 上下文);lang 由正文 i18n.Detect 决定 — email sink/coalesce",
+    "default": "Message from bob",
+    "zh": "来自 bob 的消息"
+  },
+  "email.subject.file_prefix": {
+    "_note": "附件投递邮件主题前缀(后接文件名);lang 由 caption i18n.Detect 决定 — email 65-attachment.go",
+    "default": "File from bob: ",
+    "zh": "来自 bob 的文件："
+  },
+  "slash.model.reloaded": {
+    "_note": "重载 models.yaml 成功 (poolAction)",
+    "default": "✅ (reloaded models.yaml)",
+    "zh": "✅ （已重载 models.yaml）"
+  },
+  "slash.model.paused": {
+    "_note": "暂停成功,%s=名称 (poolAction)",
+    "default": "✅ (paused %s)",
+    "zh": "✅ （已暂停 %s）"
+  },
+  "slash.model.resumed": {
+    "_note": "恢复成功,%s=名称 (poolAction)",
+    "default": "✅ (resumed %s)",
+    "zh": "✅ （已恢复 %s）"
+  },
+  "slash.help.group_caveat": {
+    "_note": "/help 群里的提示尾巴",
+    "default": "\n\n(In groups, slash commands need to reply to one of bob's messages to address the right session; not needed in DM.)",
+    "zh": "\n\n（在群里，slash 命令需要回复 bob 的某条消息才能定位到正确的会话；DM 中无需。）"
+  },
+  "slash.agora.usage": {
+    "_note": "/agora 顶层用法(slashAgora,原 agoraUsage const)",
+    "default": "📋 Usage:\n/agora bootstrap <company> [--founder=<name>] [--bridge-to-chat=auto|<source>:<dm|group>:<chat>]\n/agora overview\n/agora company create <name> | company list | company disable <companyID>\n/agora hire <company> <member> <role>\n/agora inbox add-source <inboxID> <sourceID> <dm|group> <chatID> [threadID]\n/agora inbox list <companyID> | inbox pause <inboxID> | inbox resume <inboxID>\n/agora prompt <member>  (dump a worker's live agora context: identity/directory/tools/skills)\n/agora reload",
+    "zh": "📋 用法：\n/agora bootstrap <公司名> [--founder=<名字>] [--bridge-to-chat=auto|<source>:<dm|group>:<chat>]\n/agora overview\n/agora company create <名称> | company list | company disable <公司ID>\n/agora hire <公司名> <成员名> <角色>\n/agora inbox add-source <inboxID> <sourceID> <dm|group> <chatID> [threadID]\n/agora inbox list <公司ID> | inbox pause <inboxID> | inbox resume <inboxID>\n/agora prompt <成员名>  (dump 某 worker 的实时 agora 上下文：身份/通讯录/工具/技能)\n/agora reload"
+  },
+  "slash.session.header": {
+    "_note": "/session 路由 peek 标题 — leaf/session/80-slash.go slashSession",
+    "default": "📍 Routing",
+    "zh": "📍 路由信息"
+  },
+  "slash.session.scope": {
+    "_note": "/session: 解析出的 scope (%s=scope) — leaf/session/80-slash.go",
+    "default": "scope: %s",
+    "zh": "范围：%s"
+  },
+  "slash.session.user": {
+    "_note": "/session: 发送者 user id (%s=user) — leaf/session/80-slash.go",
+    "default": "user: %s",
+    "zh": "用户：%s"
+  },
+  "slash.session.sid": {
+    "_note": "/session: 当前 active sid (%s=sid) — leaf/session/80-slash.go",
+    "default": "sid: %s",
+    "zh": "会话：%s"
+  },
+  "slash.session.sid_read_failed": {
+    "_note": "/session: 读 active sid 遇 store 错误 — leaf/session/80-slash.go",
+    "default": "sid: (read failed)",
+    "zh": "会话：（读取失败）"
+  },
+  "slash.session.no_session": {
+    "_note": "/session: 本 scope 还没有任何会话 — leaf/session/80-slash.go",
+    "default": "sid: (no session in this scope yet)",
+    "zh": "会话：（本范围还没有会话）"
+  },
+  "slash.session.flow": {
+    "_note": "/session: 处理本 scope 的 flow 名 (%s=flow) — leaf/session/80-slash.go",
+    "default": "flow: %s",
+    "zh": "流程：%s"
+  },
+  "slash.session.mode": {
+    "_note": "/session: flow 声明的 SessionMode 行 (%s=mode gloss) — leaf/session/80-slash.go",
+    "default": "mode: %s",
+    "zh": "模式：%s"
+  },
+  "slash.session.mode_manual": {
+    "_note": "/session: manual 模式行为注解 — leaf/session/80-slash.go describeMode",
+    "default": "manual (messages queue; needs human confirmation)",
+    "zh": "manual（消息排队，需人工确认后处理）"
+  },
+  "slash.session.mode_auto": {
+    "_note": "/session: auto 模式行为注解 — leaf/session/80-slash.go describeMode",
+    "default": "auto (automated, silent: no queue notices, no interruption)",
+    "zh": "auto（自动处理，静默：无排队通知、不打断）"
+  },
+  "slash.session.mode_none": {
+    "_note": "/session: none 模式行为注解 — leaf/session/80-slash.go describeMode",
+    "default": "none (plain session, no confirmation needed)",
+    "zh": "none（普通会话，无需人工确认）"
+  },
+  "slash.session.mode_unknown": {
+    "_note": "/session: mode 未定(首轮前) — leaf/session/80-slash.go describeMode",
+    "default": "(determined after the first turn)",
+    "zh": "（首轮运行后确定）"
+  },
+  "slash.agora.admin_only": {
+    "_note": "非管理员拒绝(slashAgora)",
+    "default": "🔒 Administrator permission required.",
+    "zh": "🔒 需要管理员权限。"
+  },
+  "slash.agora.reload_failed": {
+    "_note": "reload 失败(slashAgora reload),%s=err",
+    "default": "⚠️ Reload failed: %s",
+    "zh": "⚠️ 重载失败：%s"
+  },
+  "slash.agora.reload_ok": {
+    "_note": "reload 成功(slashAgora reload)",
+    "default": "✅ Reloaded org cache + routing from store.",
+    "zh": "✅ 已从存储重载组织缓存 + 路由。"
+  },
+  "slash.agora.unknown_sub": {
+    "_note": "未知顶层子命令(slashAgora default),%s=sub",
+    "default": "⚠️ Unknown subcommand: %s",
+    "zh": "⚠️ 未知子命令：%s"
+  },
+  "slash.agora.bootstrap_usage": {
+    "_note": "bootstrap 用法(scBootstrap)",
+    "default": "📋 Usage: /agora bootstrap <company> [--founder=<name>] [--bridge-to-chat=auto|<source>:<dm|group>:<chat>]",
+    "zh": "📋 用法：/agora bootstrap <公司名> [--founder=<名字>] [--bridge-to-chat=auto|<source>:<dm|group>:<chat>]"
+  },
+  "slash.agora.bootstrap_unknown_flag": {
+    "_note": "bootstrap 未知参数(scBootstrap),%s=flag",
+    "default": "⚠️ Unknown flag: %s",
+    "zh": "⚠️ 未知参数：%s"
+  },
+  "slash.agora.bootstrap_failed": {
+    "_note": "bootstrap 失败(scBootstrap),%s=err",
+    "default": "⚠️ Bootstrap failed: %s",
+    "zh": "⚠️ 初始化失败：%s"
+  },
+  "slash.agora.bootstrap_ok": {
+    "_note": "bootstrap 成功首行(scBootstrap),%s=name %s=id",
+    "default": "✅ Bootstrapped company %s (%s)",
+    "zh": "✅ 已初始化公司 %s（%s）"
+  },
+  "slash.agora.bootstrap_bridge": {
+    "_note": "bootstrap 结果 bridge 行(scBootstrap),%s=id %s=scope",
+    "default": "- bridge inbox: %s (%s)",
+    "zh": "- bridge inbox：%s（%s）"
+  },
+  "slash.agora.bootstrap_founder": {
+    "_note": "bootstrap 结果创始成员行(scBootstrap),%s=name",
+    "default": "- founder: %s",
+    "zh": "- 创始成员：%s"
+  },
+  "slash.agora.bootstrap_founder_inbox": {
+    "_note": "bootstrap 结果创始 inbox 行(scBootstrap),%s=id %s=scope",
+    "default": "- founder inbox: %s (%s)",
+    "zh": "- 创始 inbox：%s（%s）"
+  },
+  "slash.agora.bootstrap_chat_bound": {
+    "_note": "bootstrap 外部聊天已绑定行(scBootstrap),%s=source row id",
+    "default": "- bound external chat → bridge (source row %s)",
+    "zh": "- 已绑定外部聊天 → bridge（source row %s）"
+  },
+  "slash.agora.bootstrap_chat_bind_failed": {
+    "_note": "bootstrap 外部聊天绑定失败行(scBootstrap)",
+    "default": "- ⚠️ external chat binding failed (company still usable; retry later with /agora inbox add-source)",
+    "zh": "- ⚠️ 外部聊天绑定未成功（公司仍可用，可稍后用 /agora inbox add-source 重试）"
+  },
+  "slash.agora.overview_companies": {
+    "_note": "overview 公司分组标题(scOverview),%d=count",
+    "default": "📋 Companies (%d):",
+    "zh": "📋 公司（%d）："
+  },
+  "slash.agora.overview_members": {
+    "_note": "overview 成员分组标题(scOverview),%d=count",
+    "default": "Members (%d):",
+    "zh": "成员（%d）："
+  },
+  "slash.agora.overview_inboxes": {
+    "_note": "overview 收件箱分组标题(scOverview),%d=count",
+    "default": "Inboxes (%d, incl. paused):",
+    "zh": "收件箱（%d，含暂停）："
+  },
+  "slash.agora.overview_skills": {
+    "_note": "overview 已注册技能分组标题(scOverview),%d=count;需各公司 permissions_yaml 授权才可用",
+    "default": "Skills (%d registered — grant per company to use):",
+    "zh": "技能（%d，已注册——需各公司授权才可用）："
+  },
+  "slash.agora.company_usage": {
+    "_note": "company 用法(scCompany)",
+    "default": "📋 Usage: /agora company create <name> | list | disable <companyID> | enable <companyID> | pause <companyID> | resume <companyID>",
+    "zh": "📋 用法：/agora company create <名称> | list | disable <公司ID> | enable <公司ID> | pause <公司ID> | resume <公司ID>"
+  },
+  "slash.agora.company_create_usage": {
+    "_note": "company create 用法(scCompany)",
+    "default": "📋 Usage: /agora company create <name>",
+    "zh": "📋 用法：/agora company create <名称>"
+  },
+  "slash.agora.company_create_failed": {
+    "_note": "company create 失败(scCompany),%s=err",
+    "default": "⚠️ Create failed: %s",
+    "zh": "⚠️ 创建失败：%s"
+  },
+  "slash.agora.company_create_ok": {
+    "_note": "company create 成功(scCompany),%s=id %s=name %s=reportInboxID",
+    "default": "✅ Created company %s (%s), bridge inbox=%s.",
+    "zh": "✅ 已创建公司 %s（%s），bridge inbox=%s。"
+  },
+  "slash.agora.read_failed": {
+    "_note": "列表读取失败(company/inbox/channel list),%s=err",
+    "default": "⚠️ Read failed: %s",
+    "zh": "⚠️ 读取失败：%s"
+  },
+  "slash.agora.company_list_empty": {
+    "_note": "company list 空(scCompany)",
+    "default": "📋 No companies yet.",
+    "zh": "📋 还没有公司。"
+  },
+  "slash.agora.company_disable_usage": {
+    "_note": "company disable 用法(scCompany)",
+    "default": "📋 Usage: /agora company disable <companyID>",
+    "zh": "📋 用法：/agora company disable <公司ID>"
+  },
+  "slash.agora.company_disable_failed": {
+    "_note": "company disable 失败(scCompany),%s=err",
+    "default": "⚠️ Disable failed: %s",
+    "zh": "⚠️ 停用失败：%s"
+  },
+  "slash.agora.company_disable_ok": {
+    "_note": "company disable 成功(scCompany),%s=companyID",
+    "default": "✅ Company %s disabled (stops accepting new messages; in-flight and outbound continue).",
+    "zh": "✅ 公司 %s 已停用（停止接收新消息；在途与外发继续）。"
+  },
+  "slash.agora.company_unknown_sub": {
+    "_note": "company 未知子命令(scCompany default),%s=arg",
+    "default": "⚠️ Unknown subcommand: company %s",
+    "zh": "⚠️ 未知子命令：company %s"
+  },
+  "slash.agora.company_delete_usage": {
+    "_note": "company delete 用法(scCompany)",
+    "default": "📋 Usage: /agora company delete <companyID|name> confirm",
+    "zh": "📋 用法：/agora company delete <公司ID或名> confirm"
+  },
+  "slash.agora.company_delete_confirm": {
+    "_note": "company delete 需 confirm 二次确认(scCompany),%s=arg",
+    "default": "⚠️ This PERMANENTLY deletes company %s and its org structure (bridge inboxes, employments, and members employed ONLY here + their inboxes). Members employed elsewhere are kept. The company must already be disabled. Irreversible — re-run with confirm: /agora company delete %s confirm",
+    "zh": "⚠️ 这将永久删除公司 %s 及其组织结构（bridge 收件箱、雇佣关系、以及只在本公司任职的成员及其收件箱）；在别处任职的成员保留。公司须已 disable。不可逆 —— 加 confirm 重发：/agora company delete %s confirm"
+  },
+  "slash.agora.company_delete_failed": {
+    "_note": "company delete 失败(scCompany),%s=err",
+    "default": "⚠️ Delete failed: %s",
+    "zh": "⚠️ 删除失败：%s"
+  },
+  "slash.agora.company_delete_ok": {
+    "_note": "company delete 成功(scCompany),%s=companyID",
+    "default": "✅ Company %s deleted (org structure cut; members employed elsewhere kept; sessions roll out via retention).",
+    "zh": "✅ 公司 %s 已删除（组织结构已切；在别处任职的成员保留；会话按保留期滚出）。"
+  },
+  "slash.agora.company_unknown": {
+    "_note": "company pause/resume 公司不存在(scCompany),%s=companyID",
+    "default": "⚠️ Unknown company: %s",
+    "zh": "⚠️ 公司不存在：%s"
+  },
+  "slash.agora.company_pause_usage": {
+    "_note": "company pause/resume 用法(scCompany)",
+    "default": "📋 Usage: /agora company pause <companyID> | resume <companyID>",
+    "zh": "📋 用法：/agora company pause <公司ID> | resume <公司ID>"
+  },
+  "slash.agora.company_pause_ok": {
+    "_note": "company pause 成功(scCompany),%s=companyID。内存开关,重启清空。",
+    "default": "⏸ Company %s paused (in-memory; its workers stop handling messages — senders are told to resend after resume; a restart clears pause).",
+    "zh": "⏸ 公司 %s 已暂停（内存开关；其工作者停止处理消息，发件方会被告知恢复后重发；重启清空）。"
+  },
+  "slash.agora.company_resume_ok": {
+    "_note": "company resume 成功(scCompany),%s=companyID",
+    "default": "▶️ Company %s resumed (workers handle messages again).",
+    "zh": "▶️ 公司 %s 已恢复（工作者重新处理消息）。"
+  },
+  "slash.agora.hire_usage": {
+    "_note": "hire 用法(scHire)",
+    "default": "📋 Usage: /agora hire <company> <member> <role>",
+    "zh": "📋 用法：/agora hire <公司名> <成员名> <角色>"
+  },
+  "slash.agora.hire_failed": {
+    "_note": "hire 失败(scHire),%s=err",
+    "default": "⚠️ Hire failed: %s",
+    "zh": "⚠️ 雇佣失败：%s"
+  },
+  "slash.agora.hire_ok": {
+    "_note": "hire 成功(scHire),%s=memberName %s=company %s=role %s=inboxID %s=inboxScope",
+    "default": "✅ Hired %s as the \"%s\" of %s, inbox=%s (%s).",
+    "zh": "✅ 已雇佣 %s 为 %s 的「%s」，inbox=%s（%s）。"
+  },
+  "slash.agora.terminate_usage": {
+    "_note": "terminate 用法(scTerminate)",
+    "default": "📋 Usage: /agora terminate --company=<companyID> --member=<name>",
+    "zh": "📋 用法：/agora terminate --company=<公司ID> --member=<成员名>"
+  },
+  "slash.agora.terminate_failed": {
+    "_note": "terminate 失败(scTerminate),%s=err",
+    "default": "⚠️ Terminate failed: %s",
+    "zh": "⚠️ 解雇失败：%s"
+  },
+  "slash.agora.terminate_ok": {
+    "_note": "terminate 成功(scTerminate),%s=memberName %s=companyID",
+    "default": "✅ Terminated %s (company %s).",
+    "zh": "✅ 已解雇 %s（公司 %s）。"
+  },
+  "slash.agora.change_role_usage": {
+    "_note": "change-role 用法(scChangeRole)",
+    "default": "📋 Usage: /agora change-role --company=<companyID> --member=<name> --role=<newRole>",
+    "zh": "📋 用法：/agora change-role --company=<公司ID> --member=<成员名> --role=<新角色>"
+  },
+  "slash.agora.change_role_failed": {
+    "_note": "change-role 失败(scChangeRole),%s=err",
+    "default": "⚠️ Change role failed: %s",
+    "zh": "⚠️ 改角色失败：%s"
+  },
+  "slash.agora.change_role_ok": {
+    "_note": "change-role 成功(scChangeRole),%s=memberName %s=newRole",
+    "default": "✅ Changed %s's role to %s.",
+    "zh": "✅ 已把 %s 的角色改为 %s。"
+  },
+  "slash.agora.inbox_usage": {
+    "_note": "inbox 用法(scInbox)",
+    "default": "📋 Usage: /agora inbox add-source <inboxID> <sourceID> <dm|group> <chatID> [threadID] | list <companyID> | pause <inboxID> | resume <inboxID>",
+    "zh": "📋 用法：/agora inbox add-source <inboxID> <sourceID> <dm|group> <chatID> [threadID] | list <公司ID> | pause <inboxID> | resume <inboxID>"
+  },
+  "slash.agora.inbox_add_source_usage": {
+    "_note": "inbox add-source 用法(scInbox)",
+    "default": "📋 Usage: /agora inbox add-source <inboxID> <sourceID> <dm|group> <chatID> [threadID]",
+    "zh": "📋 用法：/agora inbox add-source <inboxID> <sourceID> <dm|group> <chatID> [threadID]"
+  },
+  "slash.agora.inbox_bad_chat_type": {
+    "_note": "inbox add-source 聊天类型非法(scInbox),%s=got",
+    "default": "⚠️ Chat type must be dm or group, got: %s",
+    "zh": "⚠️ 聊天类型必须是 dm 或 group，收到：%s"
+  },
+  "slash.agora.inbox_add_source_failed": {
+    "_note": "inbox add-source 失败(scInbox),%s=err",
+    "default": "⚠️ Bind failed: %s",
+    "zh": "⚠️ 绑定失败：%s"
+  },
+  "slash.agora.inbox_add_source_ok": {
+    "_note": "inbox add-source 成功(scInbox),%s=sourceID %s=chatType %s=chatID %s=inboxID %s=source row id",
+    "default": "✅ Bound %s:%s:%s to inbox %s (source row %s).",
+    "zh": "✅ 已把 %s:%s:%s 绑定到 inbox %s（source row %s）。"
+  },
+  "slash.agora.inbox_list_usage": {
+    "_note": "inbox list 用法(scInbox)",
+    "default": "📋 Usage: /agora inbox list <companyID>",
+    "zh": "📋 用法：/agora inbox list <公司ID>"
+  },
+  "slash.agora.inbox_list_empty": {
+    "_note": "inbox list 空(scInbox)",
+    "default": "📋 This company has no inboxes.",
+    "zh": "📋 该公司没有收件箱。"
+  },
+  "slash.agora.inbox_pause_usage": {
+    "_note": "inbox pause 用法(scInbox)",
+    "default": "📋 Usage: /agora inbox pause <inboxID>",
+    "zh": "📋 用法：/agora inbox pause <inboxID>"
+  },
+  "slash.agora.inbox_pause_failed": {
+    "_note": "inbox pause 失败(scInbox),%s=err",
+    "default": "⚠️ Pause failed: %s",
+    "zh": "⚠️ 暂停失败：%s"
+  },
+  "slash.agora.inbox_pause_ok": {
+    "_note": "inbox pause 成功(scInbox),%s=inboxID",
+    "default": "✅ inbox %s paused (no longer accepting new messages).",
+    "zh": "✅ inbox %s 已暂停（不再接收新消息）。"
+  },
+  "slash.agora.inbox_resume_usage": {
+    "_note": "inbox resume 用法(scInbox)",
+    "default": "📋 Usage: /agora inbox resume <inboxID>",
+    "zh": "📋 用法：/agora inbox resume <inboxID>"
+  },
+  "slash.agora.inbox_resume_failed": {
+    "_note": "inbox resume 失败(scInbox),%s=err",
+    "default": "⚠️ Resume failed: %s",
+    "zh": "⚠️ 恢复失败：%s"
+  },
+  "slash.agora.inbox_resume_ok": {
+    "_note": "inbox resume 成功(scInbox),%s=inboxID",
+    "default": "✅ inbox %s resumed.",
+    "zh": "✅ inbox %s 已恢复。"
+  },
+  "slash.agora.inbox_unknown_sub": {
+    "_note": "inbox 未知子命令(scInbox default),%s=arg",
+    "default": "⚠️ Unknown subcommand: inbox %s",
+    "zh": "⚠️ 未知子命令：inbox %s"
+  },
+  "slash.accounts.usage": {
+    "_note": "/accounts 无参数时的用法行 (slashAccounts)，跟在本通道身份行之后",
+    "default": "📋 Usage: /accounts show [ac_id] | new <name> | list | mint <ac_id> | flow <ac_id> <flow> | approve <ac_id> | pause|resume <ac_id> | apikey new|list|revoke",
+    "zh": "📋 用法：/accounts show [ac_id] | new <名称> | list | mint <ac_id> | flow <ac_id> <流程> | approve <ac_id> | pause|resume <ac_id> | apikey new|list|revoke"
+  },
+  "slash.accounts.self": {
+    "_note": "/accounts 无参数时的本通道身份行 (selfLine)，%s=id/名称/flow/status",
+    "default": "👤 This channel → %s (%s) · flow=%s · %s",
+    "zh": "👤 本通道 → %s（%s）· flow=%s · %s"
+  },
+  "slash.accounts.self_none": {
+    "_note": "本通道没有绑定账户 (selfLine/cmdShow)",
+    "default": "👤 This channel has no account bound yet — `/accounts new <name>` creates one.",
+    "zh": "👤 本通道还没有绑定账户 —— `/accounts new <名称>` 就能建一个。"
+  },
+  "slash.accounts.self_unknown": {
+    "_note": "本通道身份读取失败 (selfLine)，刻意与「没有账户」区分",
+    "default": "👤 (could not read this channel's account right now — retry)",
+    "zh": "👤 （这会儿读不到本通道的账户，请重试）"
+  },
+  "slash.accounts.self_id_only": {
+    "_note": "本通道已绑定但账户详情读不到 (selfLine)，%s=id",
+    "default": "👤 This channel → %s (details unavailable right now)",
+    "zh": "👤 本通道 → %s（详情暂时读不到）"
+  },
+  "slash.accounts.unknown_sub": {
+    "_note": "未知子命令错误 (slashAccounts default)",
+    "default": "⚠️ Unknown subcommand: %s",
+    "zh": "⚠️ 未知子命令：%s"
+  },
+  "slash.accounts.new_usage": {
+    "_note": "/accounts new 缺少名称的用法 (cmdNew)",
+    "default": "📋 Usage: /accounts new <name> [--me|--empty]",
+    "zh": "📋 用法：/accounts new <名称> [--me|--empty]"
+  },
+  "slash.accounts.already_bound": {
+    "_note": "自绑定时该通道已绑到别的账户 (cmdNew)",
+    "default": "⚠️ You are already bound to an account.",
+    "zh": "⚠️ 你已经绑定到一个账户了。"
+  },
+  "slash.accounts.create_failed": {
+    "_note": "创建账户/生成自绑定码失败 (cmdNew/slashBind)",
+    "default": "⚠️ Create failed: %s",
+    "zh": "⚠️ 创建失败：%s"
+  },
+  "slash.accounts.created_bound": {
+    "_note": "已创建账户并绑定自己 (cmdNew)",
+    "default": "✅ Created account %s (%s) and bound you.",
+    "zh": "✅ 已创建账户 %s（%s）并绑定你。"
+  },
+  "slash.accounts.created_empty": {
+    "_note": "已创建空账户提示用 mint (cmdNew)",
+    "default": "✅ Created empty account %s (%s). Use /accounts mint %s to generate a binding code.",
+    "zh": "✅ 已创建空账户 %s（%s）。用 /accounts mint %s 生成绑定码。"
+  },
+  "slash.accounts.admin_required": {
+    "_note": "需要管理员权限 (cmdList/cmdShow/cmdMint/cmdFlow)",
+    "default": "🔒 Admin privileges required.",
+    "zh": "🔒 需要管理员权限。"
+  },
+  "slash.accounts.read_failed": {
+    "_note": "读取账户/通道失败 (cmdList/slashBind)",
+    "default": "⚠️ Read failed: %s",
+    "zh": "⚠️ 读取失败：%s"
+  },
+  "slash.accounts.enrich_failed": {
+    "_note": "channels/usage 二级查询失败时的提示 (cmdList/cmdShow)，避免把瞬时错误显示成 0",
+    "default": "⚠️ (some channel/usage fields failed to load — retry)",
+    "zh": "⚠️ （部分通道/用量字段加载失败，请重试）"
+  },
+  "slash.accounts.list_empty": {
+    "_note": "还没有任何账户 (cmdList)",
+    "default": "📋 No accounts yet.",
+    "zh": "📋 还没有账户。"
+  },
+  "slash.accounts.list_row": {
+    "_note": "账户列表单行 (cmdList)，含尾换行",
+    "default": "%s  %s  [flow=%s, %d channels]\n",
+    "zh": "%s  %s  [flow=%s, %d 个通道]\n"
+  },
+  "slash.accounts.not_found": {
+    "_note": "账户不存在 (cmdShow)",
+    "default": "⚠️ Account not found: %s",
+    "zh": "⚠️ 账户不存在：%s"
+  },
+  "slash.accounts.show_header": {
+    "_note": "show 详情首行账户信息 (cmdShow)，含尾换行",
+    "default": "Account %s (%s) flow=%s\n",
+    "zh": "账户 %s（%s）flow=%s\n"
+  },
+  "slash.accounts.show_status": {
+    "_note": "show 详情状态行 (cmdShow)，含尾换行 (%s=status)",
+    "default": "status=%s\n",
+    "zh": "状态=%s\n"
+  },
+  "slash.accounts.show_channels": {
+    "_note": "show 通道数标题行 (cmdShow)，含尾换行",
+    "default": "Channels (%d):\n",
+    "zh": "通道（%d）：\n"
+  },
+  "slash.accounts.show_channel_row": {
+    "_note": "show 单个通道行 (cmdShow)，含缩进与尾换行",
+    "default": "  - %s:%s (bound via %s)\n",
+    "zh": "  - %s:%s（绑定源 %s）\n"
+  },
+  "slash.accounts.show_usage_label": {
+    "_note": "show 用量段标签 (cmdShow)",
+    "default": "Usage: ",
+    "zh": "用量："
+  },
+  "slash.accounts.show_usage_none": {
+    "_note": "show 用量为空 (cmdShow)",
+    "default": "(none)",
+    "zh": "（暂无）"
+  },
+  "slash.accounts.mint_dm_only": {
+    "_note": "mint 必须私聊以免泄露绑定码 (cmdMint)",
+    "default": "🔒 Please use /accounts mint in a DM (to avoid leaking the binding code in a group).",
+    "zh": "🔒 请私聊使用 /accounts mint（避免在群里泄露绑定码）。"
+  },
+  "slash.accounts.mint_usage": {
+    "_note": "/accounts mint 缺少 ac_id 用法 (cmdMint)",
+    "default": "📋 Usage: /accounts mint <ac_id>",
+    "zh": "📋 用法：/accounts mint <ac_id>"
+  },
+  "slash.accounts.bindto_usage": {
+    "_note": "/accounts bindto 缺少 ac_id 用法 (cmdBindTo — token 批命令兑换动作)",
+    "default": "📋 Usage: /accounts bindto <ac_id>",
+    "zh": "📋 用法：/accounts bindto <ac_id>"
+  },
+  "slash.accounts.mint_failed": {
+    "_note": "mint 生成失败（账户不存在?） (cmdMint)",
+    "default": "⚠️ Generation failed (account not found?): %s",
+    "zh": "⚠️ 生成失败（账户不存在？）：%s"
+  },
+  "slash.accounts.mint_code": {
+    "_note": "mint 成功返回绑定码 (cmdMint)",
+    "default": "🔑 Binding code (valid for 15 minutes, have them send it on any channel):\n%s",
+    "zh": "🔑 绑定码（15 分钟内有效，让对方在任意通道发送）：\n%s"
+  },
+  "slash.accounts.flow_usage": {
+    "_note": "/accounts flow 用法 (cmdFlow) — flow 是逗号分隔的准入集,normal 永远隐含",
+    "default": "📋 Usage: /accounts flow <ac_id> <flows>  (comma-separated entitlement set, e.g. normal,agora; normal is always implied)",
+    "zh": "📋 用法：/accounts flow <ac_id> <流程集>（逗号分隔的准入集，如 normal,agora；normal 永远隐含）"
+  },
+  "slash.accounts.flow_failed": {
+    "_note": "设置 flow 失败（账户不存在?） (cmdFlow)",
+    "default": "⚠️ Set failed (account not found?): %s",
+    "zh": "⚠️ 设置失败（账户不存在？）：%s"
+  },
+  "slash.accounts.flow_set": {
+    "_note": "账户 flow 已设置 (cmdFlow)",
+    "default": "✅ Account %s flow set to %s.",
+    "zh": "✅ 账户 %s 的流程已设为 %s。"
+  },
+  "slash.accounts.approve_usage": {
+    "_note": "/accounts approve 用法 (cmdApprove)",
+    "default": "📋 Usage: /accounts approve <ac_id>",
+    "zh": "📋 用法：/accounts approve <ac_id>"
+  },
+  "slash.accounts.approve_failed": {
+    "_note": "审批失败 (cmdApprove)",
+    "default": "❌ Could not approve account %s.",
+    "zh": "❌ 无法通过账户 %s。"
+  },
+  "slash.accounts.approved": {
+    "_note": "审批通过、已授予 flow (cmdApprove)",
+    "default": "✅ Approved %s — granted flow: %s.",
+    "zh": "✅ 已通过 %s——授予流程：%s。"
+  },
+  "slash.accounts.approved_still_paused": {
+    "_note": "approve 后账号仍 paused 的提示,status⊥flow (cmdApprove, %s=id)",
+    "default": "⚠️ Note: this account is still PAUSED, so access is NOT restored yet — run /accounts resume %s to actually let them back in.",
+    "zh": "⚠️ 注意：该账号仍处 PAUSED,访问尚未恢复——需 /accounts resume %s 才能真正放行。"
+  },
+  "slash.accounts.status_usage": {
+    "_note": "/accounts pause|resume 用法 (cmdStatus)",
+    "default": "📋 Usage: /accounts pause <ac_id>  |  /accounts resume <ac_id>",
+    "zh": "📋 用法：/accounts pause <ac_id>  |  /accounts resume <ac_id>"
+  },
+  "slash.accounts.status_failed": {
+    "_note": "设置 status 失败（账户不存在?） (cmdStatus)",
+    "default": "⚠️ Set failed (account not found?): %s",
+    "zh": "⚠️ 设置失败（账户不存在？）：%s"
+  },
+  "slash.accounts.status_set": {
+    "_note": "账户 status 已设置 (cmdStatus)",
+    "default": "✅ Account %s status set to %s.",
+    "zh": "✅ 账户 %s 的状态已设为 %s。"
+  },
+  "slash.accounts.apikey_usage": {
+    "_note": "/accounts apikey 用法 (cmdAPIKey)",
+    "default": "📋 Usage: /accounts apikey new <ac_id> [kinds=llm,translate | models=x,y] [label]  |  list [ac_id]  |  revoke <ak_id>",
+    "zh": "📋 用法：/accounts apikey new <ac_id> [kinds=llm,translate | models=x,y] [标签]  |  list [ac_id]  |  revoke <ak_id>"
+  },
+  "slash.accounts.apikey_dm_only": {
+    "_note": "apikey new 仅限私聊 (cmdAPIKeyNew)",
+    "default": "🔒 Mint an API key in a direct message — the token would leak in a group.",
+    "zh": "🔒 请在私聊中创建 API key——群里发会泄露令牌。"
+  },
+  "slash.accounts.apikey_new_usage": {
+    "_note": "apikey new 用法 (cmdAPIKeyNew)",
+    "default": "📋 Usage: /accounts apikey new <ac_id> [kinds=llm,translate | models=x,y] [label]",
+    "zh": "📋 用法：/accounts apikey new <ac_id> [kinds=llm,translate | models=x,y] [标签]"
+  },
+  "slash.accounts.apikey_new_conflict": {
+    "_note": "apikey new 同时给了 kinds= 和 models= (cmdAPIKeyNew)",
+    "default": "⚠️ Give kinds= OR models=, not both — a key uses one form.",
+    "zh": "⚠️ kinds= 和 models= 只能给一个——一把 key 用一种形式。"
+  },
+  "slash.accounts.apikey_empty_allow": {
+    "_note": "apikey new 的 kinds=/models= 写了但是空值 (cmdAPIKeyNew)",
+    "default": "⚠️ kinds= / models= was given but empty — spell it out, or omit the flag entirely to take the default (kinds=llm).",
+    "zh": "⚠️ kinds= / models= 给了空值——把名单写出来，或者整个不写以取默认值（kinds=llm）。"
+  },
+  "slash.accounts.apikey_bad_flag": {
+    "_note": "apikey new 的参数看着像 flag 但写法不对 (cmdAPIKeyNew, %s=原样的那个参数)",
+    "default": "⚠️ Don't know what to do with %q — the policy flags are `kinds=a,b` or `models=x,y` (no space after the comma). A label must not contain `=`.",
+    "zh": "⚠️ 这个参数看不懂：%q —— 策略写法是 `kinds=a,b` 或 `models=x,y`（逗号后别留空格）；标签里不要出现 `=`。"
+  },
+  "slash.accounts.apikey_bad_kind": {
+    "_note": "apikey new 的 kinds= 里有未知 lane (cmdAPIKeyNew, %s=给的值, %s=合法取值)",
+    "default": "⚠️ Unknown lane %q in kinds= — pick from: %s (omit the flag for llm).",
+    "zh": "⚠️ kinds= 里的 %q 不是已知 lane——可选：%s（不写就是 llm）。"
+  },
+  "slash.accounts.apikey_no_account": {
+    "_note": "apikey new 目标账户不存在 (cmdAPIKeyNew, %s=id)",
+    "default": "❌ No such account: %s",
+    "zh": "❌ 账户不存在：%s"
+  },
+  "slash.accounts.apikey_mint_failed": {
+    "_note": "apikey new 铸造失败 (cmdAPIKeyNew, %s=err)",
+    "default": "⚠️ Mint failed: %s",
+    "zh": "⚠️ 创建失败：%s"
+  },
+  "slash.accounts.apikey_minted": {
+    "_note": "apikey new 成功回执,明文仅此一次 (cmdAPIKeyNew, %s=key-id, %s=policy, %s=token)",
+    "default": "✅ API key %s created (%s).\nToken (shown once — store it now):\n%s",
+    "zh": "✅ 已创建 API key %s（%s）。\n令牌（仅显示这一次，请立即保存）：\n%s"
+  },
+  "slash.accounts.apikey_list_failed": {
+    "_note": "apikey list 失败 (cmdAPIKeyList, %s=err)",
+    "default": "⚠️ List failed: %s",
+    "zh": "⚠️ 列出失败：%s"
+  },
+  "slash.accounts.apikey_list_empty": {
+    "_note": "apikey list 无结果 (cmdAPIKeyList)",
+    "default": "No API keys.",
+    "zh": "没有 API key。"
+  },
+  "slash.accounts.apikey_list_header": {
+    "_note": "apikey list 表头 (cmdAPIKeyList)",
+    "default": "API keys (id · account · status · policy):",
+    "zh": "API keys（id · 账户 · 状态 · 策略）："
+  },
+  "slash.accounts.apikey_revoke_usage": {
+    "_note": "apikey revoke 用法 (cmdAPIKeyRevoke)",
+    "default": "📋 Usage: /accounts apikey revoke <ak_id>",
+    "zh": "📋 用法：/accounts apikey revoke <ak_id>"
+  },
+  "slash.accounts.apikey_no_key": {
+    "_note": "apikey revoke 目标 key 不存在 (cmdAPIKeyRevoke, %s=id)",
+    "default": "❌ No such API key: %s",
+    "zh": "❌ API key 不存在：%s"
+  },
+  "slash.accounts.apikey_revoke_failed": {
+    "_note": "apikey revoke 失败 (cmdAPIKeyRevoke, %s=err)",
+    "default": "⚠️ Revoke failed: %s",
+    "zh": "⚠️ 吊销失败：%s"
+  },
+  "slash.accounts.apikey_revoked": {
+    "_note": "apikey revoke 成功 (cmdAPIKeyRevoke, %s=id)",
+    "default": "✅ API key %s revoked.",
+    "zh": "✅ API key %s 已吊销。"
+  },
+  "slash.accounts.redeem_handle_bound_elsewhere": {
+    "_note": "裸码绑定:handle 已绑别的账户 (TryRedeem)",
+    "default": "This channel is already bound to another account.",
+    "zh": "这个身份已绑定到另一个账户。"
+  },
+  "slash.accounts.redeem_account_not_found": {
+    "_note": "裸码绑定:目标账户不存在 (TryRedeem)",
+    "default": "Account not found (it may have been deleted).",
+    "zh": "账户不存在（可能已被删除）。"
+  },
+  "slash.accounts.redeem_transient_retry": {
+    "_note": "裸码绑定:瞬时失败,可用同码重试 (TryRedeem)",
+    "default": "Binding failed for now — please send the same code again.",
+    "zh": "绑定暂时失败，请用同一个码再试一次。"
+  },
+  "slash.accounts.redeem_bound_ok": {
+    "_note": "裸码绑定成功 (TryRedeem)",
+    "default": "✅ Bound to your account.",
+    "zh": "✅ 已绑定到账户。"
+  },
+  "slash.accounts.redeem_bound_pending": {
+    "_note": "裸码绑定成功但自动 allowlist 未生效 (D8) — 诚实告知访问待开通,别假报 ok",
+    "default": "✅ Bound to your account — but access isn't live yet. Ask an admin to grant you access.",
+    "zh": "✅ 已绑定到账户——但访问还没开通,请让管理员给你开权限。"
+  },
+  "slash.webui.token_minted": {
+    "_note": "/webui mint 管理令牌消息 (%s=token)",
+    "default": "Admin token (valid 5 min, single use):\n%s\n\nPaste it into the dashboard's input box to unlock admin mode.",
+    "zh": "管理令牌（5 分钟内有效，单次使用）：\n%s\n\n粘贴到仪表盘的输入框解锁管理模式。"
+  },
+  "slash.webui.takeover_unavailable": {
+    "_note": "/takeover 无浏览器后端",
+    "default": "Takeover is not enabled (no browser backend configured).",
+    "zh": "接管功能未启用（未配置浏览器后端）。"
+  },
+  "slash.webui.takeover_dm_only": {
+    "_note": "/takeover 拒绝群内使用",
+    "default": "Please use /takeover in a DM — the token rides the reply and would leak in a group.",
+    "zh": "/takeover 请在私聊里用——令牌会出现在回复里，群里会泄露。"
+  },
+  "slash.webui.takeover_no_live": {
+    "_note": "/takeover 无活动浏览器",
+    "default": "This session has no live browser to take over right now.",
+    "zh": "这个会话当前没有活动的浏览器可以接管。"
+  },
+  "slash.webui.takeover_member_no_live": {
+    "_note": "/takeover 显式点名成员但该成员无活浏览器(副本已释放/名字打错) — 响亮报错,绝不静默回落裸群 scope (%s=member)",
+    "default": "Member \"%s\" has no live browser to take over right now — check the name, or run /takeover without an argument for this chat's own browser.",
+    "zh": "成员「%s」当前没有活动的浏览器可以接管——检查一下名字，或不带参数运行 /takeover 接管本会话自己的浏览器。"
+  },
+  "slash.webui.takeover_mint_failed": {
+    "_note": "/takeover 令牌 mint 失败",
+    "default": "Couldn't mint a takeover token right now — please try again later.",
+    "zh": "暂时无法生成接管令牌，请稍后再试。"
+  },
+  "slash.webui.takeover_group_visible_warn": {
+    "_note": "/takeover 群可见性警告前缀(后接令牌正文)",
+    "default": "⚠️ This token is visible in the current group chat — use a DM if that's a concern.\n",
+    "zh": "⚠️ 此令牌在当前群聊里可见，介意请改用私聊。\n"
+  },
+  "slash.webui.takeover_token_minted": {
+    "_note": "/takeover 交付能力令牌 (%s=warn前缀, %s=token)",
+    "default": "%sBrowser-takeover token (valid 5 min, single use):\n%s\n\nOpen the dashboard and paste it into the input box to take over this session's browser (after logging in / clearing the captcha, click \"保存登陆\").",
+    "zh": "%s浏览器接管令牌（5 分钟内有效，单次使用）：\n%s\n\n打开仪表盘，粘贴到输入框即可接管这个会话的浏览器（登录/清验证后点「保存登陆」）。"
+  },
+  "gate.bounce": {
+    "_note": "未授权陌生人的精简提示(含申请人身份+admit token);本地化,可公开发群(token 冻结即安全)。%s=申请人名, %s=token(F140:身份让 admin 忙群里分得清哪个码是谁)",
+    "default": "👋 %s isn't set up to chat here yet. An admin can grant access with this code:\n\n🔑 %s",
+    "zh": "👋 %s 还不能在这儿聊天。管理员可以用这个码开通：\n\n🔑 %s"
+  },
+  "gate.bounce.desc": {
+    "_note": "bounce token 的宏描述(BatchPayload.Desc):兑换回执首行,告诉管理员这码干嘛。%s=申请人名",
+    "default": "Grant %s access to chat here",
+    "zh": "开通 %s 在这里聊天"
+  },
+  "gate.batch.header": {
+    "_note": "token 批命令兑换回执的清单表头,后跟每条命令的 ✅/❌",
+    "default": "Ran:",
+    "zh": "已执行："
+  },
+  "gate.slash.paused": {
+    "_note": "F41:已 approve 但被 admin pause 的用户,其副作用 slash(/bindaccount /takeover /new)被挡——pause 从『只挡说话』升到『挡一切动作』,诚实回一句",
+    "default": "⏸️ Your account is paused — commands aren't available until an admin reactivates it.",
+    "zh": "⏸️ 你的账号已暂停——需管理员重新启用后才能使用命令。"
+  },
+  "gate.slash.pending_approval": {
+    "_note": "F40:onboarding 放行进来、已注册但尚无 flow 授权(裸账号待批)的用户敲 slash——不静默吞进 intro,诚实告知登记待批",
+    "default": "⌛ You're registered but not approved yet — an admin needs to grant access before commands work.",
+    "zh": "⌛ 你已登记但还没通过审批——需管理员开通后命令才能用。"
+  },
+  "slash.gate.usage": {
+    "_note": "/gate 用法",
+    "default": "usage: /gate allow <token>   (or: /gate allow <source> <user-id>)",
+    "zh": "用法：/gate allow <令牌>   （或：/gate allow <来源> <用户ID>）"
+  },
+  "slash.gate.allow_failed": {
+    "_note": "/gate allow 失败 (%s=err)",
+    "default": "allow failed: %s",
+    "zh": "放行失败：%s"
+  },
+  "slash.gate.denied": {
+    "_note": "/gate allow 目标在 denylist,拒绝 (%s=uid, %s=source)",
+    "default": "%s is on %s's denylist — remove them from the denylist before allowing.",
+    "zh": "%s 在 %s 的 denylist 上——先移除 denylist 再放行。"
+  },
+  "slash.gate.already_allowed": {
+    "_note": "/gate 已在白名单 (%s=uid, %s=source);尾行=门禁只是第一关的提醒,见 slash.gate.approve_hint",
+    "default": "%s is already allowed on %s",
+    "zh": "%s 已在 %s 的白名单里"
+  },
+  "slash.gate.allowlisted": {
+    "_note": "/gate allow 成功 (%s=uid, %s=source);尾行=门禁只是第一关的提醒,见 slash.gate.approve_hint",
+    "default": "allowlisted %s on %s",
+    "zh": "已将 %s 加入 %s 的白名单"
+  },
+  "slash.gate.approve_hint": {
+    "_note": "追加在 /gate allow 回执(含 bounce 令牌兑换回执,命令回复会被折叠进去)尾部:门禁放行≠账号已授权,对方仍会收到 intro.pending。不写死 id(此刻账号可能还没建)",
+    "default": "Note: this only opens the door. If they still get \"waiting for an admin to grant access\", their account needs approving too — find the pending entry with /accounts list, then /accounts approve <id>.",
+    "zh": "注意：这只是开了门。若对方仍收到「等待管理员批准」，还需批准其账号——用 /accounts list 找到待批准那条，再 /accounts approve <id>。"
+  },
+  "slash.arrangement.desc": {
+    "_note": "/arrangement 命令描述 (/help)",
+    "default": "Task arrangements: status / tick <dur> (select cadence) / push <dur> (push interval) / maxconcurrent_for_arrangement <n> / cancel <id>",
+    "zh": "任务编排：status / tick <时长>（选取节奏）/ push <时长>（推送间隔）/ maxconcurrent_for_arrangement <n> / cancel <id>"
+  },
+  "slash.arrangement.bad_duration_tick": {
+    "_note": "/arrangement tick 时长解析失败 (%s=err)",
+    "default": "can't parse duration (e.g. 30s, 2m, 1h): %s",
+    "zh": "无法解析时长（如 30s, 2m, 1h）：%s"
+  },
+  "slash.arrangement.tick_set": {
+    "_note": "/arrangement tick 设置成功 (%s=dur)",
+    "default": "select cadence set to every %s",
+    "zh": "选取节奏已设为每 %s"
+  },
+  "slash.arrangement.bad_duration_push": {
+    "_note": "/arrangement push 时长解析失败 (%s=err)",
+    "default": "can't parse duration (e.g. 8s, 15s): %s",
+    "zh": "无法解析时长（如 8s, 15s）：%s"
+  },
+  "slash.arrangement.push_set": {
+    "_note": "/arrangement push 间隔设置成功 (%s=dur)",
+    "default": "push interval set to every %s",
+    "zh": "推送间隔已设为每 %s"
+  },
+  "slash.arrangement.need_integer": {
+    "_note": "/arrangement maxconcurrent 整数解析失败 (%s=err)",
+    "default": "need an integer: %s",
+    "zh": "需要一个整数：%s"
+  },
+  "slash.arrangement.maxconcurrent_set": {
+    "_note": "/arrangement 并发上限设置成功 (%d=n)",
+    "default": "per-company arrangement limit set to %d",
+    "zh": "每公司编排并发上限已设为 %d"
+  },
+  "slash.arrangement.cancel_failed": {
+    "_note": "/arrangement cancel 失败 (%s=err)",
+    "default": "cancel failed: %s",
+    "zh": "取消失败：%s"
+  },
+  "slash.arrangement.cancelled": {
+    "_note": "/arrangement cancel 成功 (%s=id)",
+    "default": "cancelled arrangement %s",
+    "zh": "已取消编排 %s"
+  },
+  "slash.arrangement.status_header": {
+    "_note": "/arrangement status 头(%d 个 / %s 选取 / %s 推送 / %d 待推 / %d 上限)",
+    "default": "Arrangements: %d; select every %s; push every %s (pending %d); max/company %d\n",
+    "zh": "编排：%d 个；选取每 %s；推送每 %s（待推 %d）；每公司上限 %d\n"
+  },
+  "slash.arrangement.status_arr_row": {
+    "_note": "/arrangement status 编排行 (id/status/company/author/stages)",
+    "default": "· %s [%s] company:%s by:%s stages:%s\n",
+    "zh": "· %s [%s] 公司:%s 发起:%s 环节:%s\n"
+  },
+  "slash.arrangement.status_load_failed": {
+    "_note": "/arrangement status 读库失败注记(数据可能不全)",
+    "default": "⚠ failed to load; data may be partial\n",
+    "zh": "⚠ 部分数据加载失败，以下内容可能不全\n"
+  },
+  "slash.arrangement.status_no_items": {
+    "_note": "/arrangement status 无条目",
+    "default": "no live/parked items",
+    "zh": "无在途/停泊条目"
+  },
+  "slash.arrangement.status_items_header": {
+    "_note": "/arrangement status 条目段头 (%d=count)",
+    "default": "Live/parked items: %d\n",
+    "zh": "在途/停泊条目：%d\n"
+  },
+  "slash.arrangement.status_item_row": {
+    "_note": "/arrangement status 条目行 (item/role/status/extra/age)",
+    "default": "· %s @%s [%s]%s age:%ds\n",
+    "zh": "· %s @%s [%s]%s 已 %ds\n"
+  },
+  "slash.arrangement.status_inflight": {
+    "_note": "/arrangement status 条目在途后缀 (%d=秒)",
+    "default": " in-flight:%ds",
+    "zh": " 在途:%ds"
+  },
+  "slash.agora.prompt_usage": {
+    "_note": "/agora prompt 用法",
+    "default": "usage: /agora prompt <member-name>",
+    "zh": "用法：/agora prompt <成员名>"
+  },
+  "slash.agora.prompt_member_not_found": {
+    "_note": "/agora prompt 成员不在缓存 (%q=name)",
+    "default": "member %q not found in cache",
+    "zh": "缓存里没找到成员 %q"
+  },
+  "slash.agora.prompt_no_active_employment": {
+    "_note": "/agora prompt 成员无 active employment (%q=name)",
+    "default": "member %q has no active employment in cache",
+    "zh": "成员 %q 在缓存里没有 active employment"
+  },
+  "slash.agora.prompt_header": {
+    "_note": "/agora prompt dump 头 (%s=name, %s=body)",
+    "default": "🔍 agora prompt for %s:\n\n%s",
+    "zh": "🔍 agora prompt for %s：\n\n%s"
+  },
+  "slash.agora.company_enable_usage": {
+    "_note": "/agora company enable 用法",
+    "default": "usage: /agora company enable <company-id>",
+    "zh": "用法：/agora company enable <公司ID>"
+  },
+  "slash.agora.company_enable_failed": {
+    "_note": "/agora company enable 失败 (%s=err)",
+    "default": "enable failed: %s",
+    "zh": "启用失败：%s"
+  },
+  "slash.agora.company_enable_ok": {
+    "_note": "/agora company enable 成功 (%s=id)",
+    "default": "enabled %s",
+    "zh": "已启用 %s"
+  },
+  "slash.agora.member_create_usage": {
+    "_note": "/agora member create 用法",
+    "default": "usage: /agora member create --name=<name> [--model-pref=] [--prompt-style=]",
+    "zh": "用法：/agora member create --name=<名字> [--model-pref=] [--prompt-style=]"
+  },
+  "slash.agora.member_create_failed": {
+    "_note": "/agora member create 失败 (%s=err)",
+    "default": "create member failed: %s",
+    "zh": "创建成员失败：%s"
+  },
+  "slash.agora.member_create_ok": {
+    "_note": "/agora member create 成功 (%s=name, %s=id)",
+    "default": "created member %s (%s)",
+    "zh": "已创建成员 %s（%s）"
+  },
+  "slash.agora.inbox_create_usage": {
+    "_note": "/agora inbox create 用法",
+    "default": "usage: /agora inbox create --member=<member> --name=<a-new-name-you-pick>",
+    "zh": "用法：/agora inbox create --member=<成员> --name=<你起的新名字>"
+  },
+  "slash.agora.inbox_create_failed": {
+    "_note": "/agora inbox create 失败 (%s=err)",
+    "default": "create inbox failed: %s",
+    "zh": "创建 inbox 失败：%s"
+  },
+  "slash.agora.inbox_create_ok": {
+    "_note": "/agora inbox create 成功 (%s=name, %s=id, %s=scope)",
+    "default": "created inbox %s (%s) scope=%s",
+    "zh": "已创建 inbox %s（%s）scope=%s"
+  },
+  "slash.agora.inbox_wire_usage": {
+    "_note": "/agora inbox wire 用法",
+    "default": "usage: /agora inbox wire <inbox-id>",
+    "zh": "用法：/agora inbox wire <inbox-id>"
+  },
+  "slash.agora.inbox_unknown": {
+    "_note": "/agora inbox 未知 inbox (%s=inboxID)",
+    "default": "unknown inbox %s",
+    "zh": "未知 inbox %s"
+  },
+  "slash.agora.inbox_bad_scope": {
+    "_note": "/agora inbox wire scope 格式错",
+    "default": "bad scope (want <source>:dm:<id> or <source>:group:<id>)",
+    "zh": "scope 格式错（应为 <source>:dm:<id> 或 <source>:group:<id>）"
+  },
+  "slash.agora.inbox_wired": {
+    "_note": "/agora inbox wire 成功 (%s=inboxID, %s=scope)",
+    "default": "wired %s ← %s",
+    "zh": "已接线 %s ← %s"
+  },
+  "agora.wire.ok": {
+    "_note": "agora-wire token 兑换成功(聊天已接线);通用文案,不漏内部 inbox id(D11)",
+    "default": "✅ This chat is now wired.",
+    "zh": "✅ 这个聊天已接线。"
+  },
+  "agora.wire.retry": {
+    "_note": "agora-wire 接线 transient 失败,留码可重试(D10);不回 raw err(D11)",
+    "default": "Couldn't wire this chat just now — please send the code again in a moment.",
+    "zh": "暂时没能接线——请稍后再发一次这个码。"
+  },
+  "agora.wire.gone": {
+    "_note": "agora-wire 接线 terminal:目标 inbox 已不存在(如公司被删),烧码(F117);不回 raw err(D11)",
+    "default": "This code is no longer valid — the workspace it was for no longer exists. Ask an admin for a new one.",
+    "zh": "这个码已失效——它对应的工作区已不存在。请找管理员要一个新的。"
+  },
+  "slash.agora.inbox_wire_token": {
+    "_note": "/agora inbox wire 令牌 (%s=token)",
+    "default": "wire token: %s\nsend it in the target chat to wire that chat to this inbox (one-time, ~15m)",
+    "zh": "接线令牌：%s\n在目标聊天里发送它即可把该聊天接到这个 inbox（一次性，约 15 分钟有效）"
+  },
+  "slash.agora.inbox_unwire_usage": {
+    "_note": "/agora inbox unwire 用法",
+    "default": "usage: /agora inbox unwire <inbox-id> <scope>",
+    "zh": "用法：/agora inbox unwire <inbox-id> <scope>"
+  },
+  "slash.agora.inbox_no_binding": {
+    "_note": "/agora inbox unwire 无此绑定 (%s=scope, %s=inboxID)",
+    "default": "no binding %s on %s (already unwired?)",
+    "zh": "%s 在 %s 上无绑定（已解绑？）"
+  },
+  "slash.agora.inbox_unwire_failed": {
+    "_note": "/agora inbox unwire 失败 (%s=err)",
+    "default": "unwire failed: %s",
+    "zh": "解绑失败：%s"
+  },
+  "slash.agora.inbox_unwired": {
+    "_note": "/agora inbox unwire 成功 (%s=inboxID, %s=scope)",
+    "default": "unwired %s ✕ %s",
+    "zh": "已解绑 %s ✕ %s"
+  },
+  "slash.accounts.bind_dm_only": {
+    "_note": "/bindaccount 必须私聊 (slashBind)",
+    "default": "🔒 Please use /bindaccount in a DM (to avoid leaking the binding code in a group).",
+    "zh": "🔒 请私聊使用 /bindaccount（避免在群里泄露绑定码）。"
+  },
+  "slash.accounts.bind_no_account": {
+    "_note": "/bindaccount 但当前通道未绑定账户;给出两条真实路径 (slashBind)",
+    "default": "⚠️ This channel isn't bound to an account yet.\n· New account, bound here: /accounts new <name>\n· Already have one on another channel: run /bindaccount there for a code, then send that code here to bind.",
+    "zh": "⚠️ 当前通道还没绑定账户。\n· 新建并绑到这里：/accounts new <名称>\n· 已在别的通道有账户：在那边用 /bindaccount 取码，回到这里把码发出来即可绑定。"
+  },
+  "slash.accounts.bind_code": {
+    "_note": "/bindaccount 成功返回自绑定码 (slashBind)",
+    "default": "🔑 Binding code (valid for 15 minutes, send it on your other channel to bind it to the same account):\n%s",
+    "zh": "🔑 绑定码（15 分钟内有效，在你的另一个通道发送即可绑定到同一账户）：\n%s"
+  },
+  "slash.tools.header": {
+    "_note": "/tools 头行,slashTools — 列出可用工具数(身份, 数量)",
+    "default": "📋 Available tools (%s, %d total):",
+    "zh": "📋 可用工具（%s，共 %d）："
+  },
+  "slash.tools.none": {
+    "_note": "/tools 空集占位行,slashTools",
+    "default": "(none)",
+    "zh": "（无）"
+  },
+  "slash.tools.entry": {
+    "_note": "/tools 每行条目(只名称;描述是模型契约不展示),slashTools",
+    "default": "• %s",
+    "zh": "• %s"
+  },
+  "slash.skills.no_subsystem": {
+    "_note": "/skills 无技能子系统时的回复,slashSkills",
+    "default": "(no skill subsystem)",
+    "zh": "（没有技能子系统）"
+  },
+  "slash.skills.header": {
+    "_note": "/skills 头行,slashSkills — 列出可用技能数(身份, 数量)",
+    "default": "📋 Available skills (%s, %d total):",
+    "zh": "📋 可用技能（%s，共 %d）："
+  },
+  "slash.skills.none": {
+    "_note": "/skills 空集占位行,slashSkills",
+    "default": "(none)",
+    "zh": "（无）"
+  },
+  "slash.skills.entry": {
+    "_note": "/skills 每行条目(名称;描述是模型契约不展示),slashSkills",
+    "default": "• %s",
+    "zh": "• %s"
+  },
+  "slash.skills.reload_admin_only": {
+    "_note": "/skills reload 非管理员拒绝,slashSkillsReload",
+    "default": "🔒 Administrator privileges required.",
+    "zh": "🔒 需要管理员权限。"
+  },
+  "slash.skills.reload_unsupported": {
+    "_note": "/skills reload 但技能目录不支持热重扫,slashSkillsReload",
+    "default": "⚠️ This skill catalog can't be rescanned at runtime.",
+    "zh": "⚠️ 当前技能目录不支持运行时重扫。"
+  },
+  "slash.skills.reload_failed": {
+    "_note": "/skills reload 重扫或对账失败,slashSkillsReload(%s=错误)",
+    "default": "⚠️ Skill reload failed: %s",
+    "zh": "⚠️ 技能重扫失败：%s"
+  },
+  "slash.skills.reload_ok": {
+    "_note": "/skills reload 成功,slashSkillsReload(%d=技能总数)",
+    "default": "✅ Rescanned skills (%d total). New skills default to OFF — grant skill:use:<name> in permissions.yaml, then /permission reload.",
+    "zh": "✅ 已重扫技能，共 %d 个。新技能默认未授权 —— 在 permissions.yaml 授权 skill:use:<名称> 后 /permission reload 即生效。"
+  },
+  "slash.permission.admin_only": {
+    "_note": "/permission 非管理员拒绝,slashPermission",
+    "default": "🔒 Administrator privileges required.",
+    "zh": "🔒 需要管理员权限。"
+  },
+  "slash.permission.reload_failed": {
+    "_note": "/permission reload 重载失败保留旧矩阵,slashPermission(%s=错误)",
+    "default": "⚠️ Permission reload failed; current matrix kept: %s",
+    "zh": "⚠️ 权限重载失败，已保留当前矩阵：%s"
+  },
+  "slash.permission.reload_ok_changed": {
+    "_note": "/permission reload 成功且新增默认行已写回文件,slashPermission",
+    "default": "✅ Reloaded permissions.yaml (added default rows for new tools/skills, written back to file).",
+    "zh": "✅ 已重载 permissions.yaml（含新工具/技能的默认行，已写回文件）。"
+  },
+  "slash.permission.reload_ok": {
+    "_note": "/permission reload 成功(无变更),slashPermission",
+    "default": "✅ Reloaded the permission matrix from permissions.yaml.",
+    "zh": "✅ 已从 permissions.yaml 重载权限矩阵。"
+  },
+  "slash.permission.usage": {
+    "_note": "/permission 未知子命令的用法提示,slashPermission",
+    "default": "📋 Usage: /permission reload",
+    "zh": "📋 用法：/permission reload"
+  },
+  "slash.model.usage": {
+    "_note": "/model 无效子命令时的用法提示 (slashModel default case)",
+    "default": "⚠️ Usage: /model [list] | pause <name> | resume <name> | reload",
+    "zh": "⚠️ 用法：/model [list] | pause <名称> | resume <名称> | reload"
+  },
+  "slash.model.empty": {
+    "_note": "模型池无条目 (renderPool)",
+    "default": "📋 (model pool is empty — check models.yaml)",
+    "zh": "📋 （模型池为空——检查 models.yaml）"
+  },
+  "slash.model.header": {
+    "_note": "模型池清单标题行,%d=条目数 %d=在途数 (renderPool)",
+    "default": "📋 Model pool: %d entries, %d in flight",
+    "zh": "📋 模型池：%d 个条目，%d 在途"
+  },
+  "slash.model.entry": {
+    "_note": "单条模型条目行,%s=名称 %s=状态 %s=provider %s=model (renderPool)",
+    "default": "• %s [%s] %s/%s",
+    "zh": "• %s [%s] %s/%s"
+  },
+  "slash.model.entry_inflight": {
+    "_note": "条目在途数后缀,%d=在途 (renderPool)",
+    "default": " inflight=%d",
+    "zh": " 在途=%d"
+  },
+  "slash.model.entry_tags": {
+    "_note": "条目标签后缀,%s=逗号分隔标签 (renderPool)",
+    "default": " tags=%s",
+    "zh": " 标签=%s"
+  },
+  "slash.model.entry_last_error": {
+    "_note": "条目最近错误行,%s=错误文本 (renderPool)",
+    "default": "    last error: %s",
+    "zh": "    最近错误：%s"
+  },
+  "slash.model.no_pool": {
+    "_note": "无可用模型池时的提示 (poolAction)",
+    "default": "⚠️ (no model pool available)",
+    "zh": "⚠️ （当前没有可用的模型池）"
+  },
+  "slash.model.action_usage": {
+    "_note": "pause/resume 缺少名称时的用法,%s=动词 (poolAction)",
+    "default": "⚠️ Usage: /model %s <name>",
+    "zh": "⚠️ 用法：/model %s <名称>"
+  },
+  "slash.model.action_failed": {
+    "_note": "操作执行失败,%s=错误文本 (poolAction)",
+    "default": "⚠️ (operation failed: %s)",
+    "zh": "⚠️ （操作失败：%s）"
+  },
+  "slash.dispatch.unknown": {
+    "_note": "未知命令提示,registry.Dispatch 名称查不到时返回",
+    "default": "⚠️ (No such command — send /help to see what's available)",
+    "zh": "⚠️（没有这个命令，发送 /help 查看可用命令）"
+  },
+  "slash.dispatch.admin_only": {
+    "_note": "非管理员触发管理员命令的拒绝提示,registry.Dispatch",
+    "default": "🔒 (This command requires administrator privileges)",
+    "zh": "🔒（这个命令需要管理员权限）"
+  },
+  "slash.help.header": {
+    "_note": "/help 命令列表的开头标题行,registry.slashHelp",
+    "default": "📋 Available commands:",
+    "zh": "📋 可用命令："
+  },
+  "slash.prompt.no_handler": {
+    "_note": "/prompt 无可用回合处理器时的回复 (slashPrompt)",
+    "default": "⚠️ No turn handler available — cannot assemble the prompt.",
+    "zh": "⚠️（无可用的回合处理器，无法组装 prompt）"
+  },
+  "slash.prompt.no_flow": {
+    "_note": "/prompt 没有 flow 接受这条消息时的回复 (slashPrompt)",
+    "default": "⚠️ No flow accepts this message — cannot assemble the prompt.",
+    "zh": "⚠️（没有 flow 接受这条消息，无法组装 prompt）"
+  },
+  "slash.prompt.header": {
+    "_note": "/prompt dump 的前缀头,后接 dump 内容 (slashPrompt)",
+    "default": "🔍 live prompt (one-shot only, no model / no persist):\n\n",
+    "zh": "🔍 live prompt（仅此一次，不进模型 / 不落库）：\n\n"
+  },
+  "slash.new.ok": {
+    "_note": "/new 成功开启新会话的确认 (slashNew)",
+    "default": "✅ Started a new session.",
+    "zh": "✅（已开启新会话）"
+  },
+  "slash.new.failed": {
+    "_note": "/new 开启新会话失败的回复 (slashNew)",
+    "default": "⚠️ Failed to start a new session, please try again later.",
+    "zh": "⚠️（开启新会话失败，请稍后再试）"
+  },
+  "slash.uncensored.armed": {
+    "_note": "/uncensored 开启回执：从发起人下一句起本会话持续偏好 uncensored 模型 (slashUncensored)",
+    "default": "✅ From your next message on, this session will prefer an uncensored model. Send /uncensored again to turn it off.",
+    "zh": "✅ 从你的下一句起，本会话将持续优先用 uncensored 模型回答；再发一次 /uncensored 可关闭。"
+  },
+  "slash.uncensored.off": {
+    "_note": "/uncensored 再次触发的关闭回执 (slashUncensored)",
+    "default": "✅ Uncensored model preference turned off.",
+    "zh": "✅ 已关闭 uncensored 模型偏好。"
+  },
+  "slash.uncensored.failed": {
+    "_note": "/uncensored 关闭时清除会话标记失败 (slashUncensored)",
+    "default": "⚠️ Failed to update the preference, please try again later.",
+    "zh": "⚠️ 偏好更新失败，请稍后再试。"
+  },
+  "slash.uncensored.desc": {
+    "_note": "/uncensored 命令在 /help 里的说明",
+    "default": "Toggle a sticky uncensored-model preference for this session",
+    "zh": "开/关本会话的 uncensored 模型偏好"
+  },
+  "slash.thinking.armed": {
+    "_note": "/thinking 开启回执：从发起人下一句起本会话持续偏好会思考的模型 (slashThinking)",
+    "default": "✅ From your next message on, this session will prefer a model that reasons before answering. Turn /trace on to watch it think. Send /thinking again to turn it off.",
+    "zh": "✅ 从你的下一句起，本会话将持续优先用会先思考再作答的模型；开着 /trace 就能看到思考过程，再发一次 /thinking 可关闭。"
+  },
+  "slash.thinking.off": {
+    "_note": "/thinking 再次触发的关闭回执 (slashThinking)",
+    "default": "✅ Thinking-model preference turned off.",
+    "zh": "✅ 已关闭思考模型偏好。"
+  },
+  "slash.thinking.failed": {
+    "_note": "/thinking 关闭时清除会话标记失败 (slashThinking)",
+    "default": "⚠️ Failed to update the preference, please try again later.",
+    "zh": "⚠️ 偏好更新失败，请稍后再试。"
+  },
+  "slash.thinking.desc": {
+    "_note": "/thinking 命令在 /help 里的说明",
+    "default": "Toggle a sticky preference for a model that reasons before answering",
+    "zh": "开/关本会话的思考模型偏好（思考过程随 /trace 显示）"
+  },
+  "slash.close.ok": {
+    "_note": "/close-session 成功停止当前回合的确认 (slashCloseSession)",
+    "default": "✅ Stopped the current turn.",
+    "zh": "✅（已停止当前回合）"
+  },
+  "slash.close.none": {
+    "_note": "/close-session 当前范围无运行中回合时的回复 (slashCloseSession)",
+    "default": "⚠️ No running turn in the current scope.",
+    "zh": "⚠️（当前范围没有正在运行的回合）"
+  },
+  "slash.trace.on": {
+    "_note": "/trace 开启过程追踪的确认 (slashTrace)",
+    "default": "✅ Process trace on: tool progress and other process info will be shown.",
+    "zh": "✅（已开启过程追踪：会显示工具进度等过程信息）"
+  },
+  "slash.trace.off": {
+    "_note": "/trace 关闭过程追踪的确认 (slashTrace)",
+    "default": "✅ Process trace off: only the final reply will be shown.",
+    "zh": "✅（已关闭过程追踪：只显示最终回复）"
+  },
+  "slash.trace.failed": {
+    "_note": "/trace 切换过程追踪失败的回复 (slashTrace)",
+    "default": "⚠️ Failed to toggle process trace, please try again later.",
+    "zh": "⚠️（切换过程追踪失败，请稍后再试）"
+  },
+  "slash.trace.usage": {
+    "_note": "/trace 参数无效时的用法提示 (slashTrace)",
+    "default": "📋 Usage: /trace [on|off] (no argument toggles).",
+    "zh": "📋 用法：/trace [on|off]（不带参数则切换）"
+  },
+  "slash.whoami.identity": {
+    "_note": "/whoami 身份字段块 (source/user/chat/role),%s x4 (slashWhoami)",
+    "default": "source: %s\nuser: %s\nchat: %s\nrole: %s",
+    "zh": "source: %s\nuser: %s\nchat: %s\nrole: %s"
+  },
+  "slash.whoami.scope": {
+    "_note": "/whoami 路由 scope 字段,%s (slashWhoami)",
+    "default": "scope: %s",
+    "zh": "scope: %s"
+  },
+  "slash.whoami.account": {
+    "_note": "/whoami 已绑定账户行 (slashWhoami): %s=名称 %s=账户id %s=flow",
+    "default": "account: %s (%s, flow=%s)",
+    "zh": "账户：%s（%s，flow=%s）"
+  },
+  "slash.whoami.account_none": {
+    "_note": "/whoami 当前通道未绑定账户 (slashWhoami)",
+    "default": "account: (not bound)",
+    "zh": "账户：（未绑定）"
+  },
+  "slash.help.desc": {
+    "_note": "/help 命令在 /help 列表里的说明 — leaf/slash/10-registry.go",
+    "default": "List available commands",
+    "zh": "列出可用命令"
+  },
+  "slash.new.desc": {
+    "_note": "/new 命令说明 — leaf/session/00-module.go",
+    "default": "Open a brand-new session",
+    "zh": "开启一个全新的会话"
+  },
+  "slash.session.desc": {
+    "_note": "/session 命令说明 — leaf/session/00-module.go",
+    "default": "Show the scope + session id this message routes to",
+    "zh": "查看当前消息路由到的会话范围与会话号"
+  },
+  "slash.whoami.desc": {
+    "_note": "/whoami 命令说明 — leaf/session/00-module.go",
+    "default": "Show your identity (source/user/role) and routing scope",
+    "zh": "查看你的身份（来源/用户/权限）与路由范围"
+  },
+  "slash.close_session.desc": {
+    "_note": "/close-session 命令说明 — leaf/session/00-module.go",
+    "default": "Stop the turn currently running (incl. in-flight tool calls)",
+    "zh": "停止当前正在运行的回合（含进行中的工具调用）"
+  },
+  "slash.trace.desc": {
+    "_note": "/trace 命令说明 — leaf/session/00-module.go",
+    "default": "Toggle process tracing (tool progress etc.): /trace [on|off]",
+    "zh": "开关过程追踪（显示工具进度等过程信息）：/trace [on|off]"
+  },
+  "slash.prompt.desc": {
+    "_note": "/prompt 命令说明(admin) — leaf/session/00-module.go",
+    "default": "(admin) Dump the live prompt this message would feed the model (system prompt + tools + skills; read-only, no model / no persist): /prompt [text]",
+    "zh": "（管理员）把这条会喂给模型的 live prompt 发出来看（系统提示 + 工具 + 技能；只读，不进模型/不落库）：/prompt [文本]"
+  },
+  "slash.tools.desc": {
+    "_note": "/tools 命令说明 — leaf/warrant/00-module.go",
+    "default": "List the tools currently available to you",
+    "zh": "列出你当前可用的工具"
+  },
+  "slash.skills.desc": {
+    "_note": "/skills 命令说明 — leaf/warrant/00-module.go",
+    "default": "List the skills available to you (/skills reload rescans external skills, admin)",
+    "zh": "列出你当前可用的技能（/skills reload 重扫外置技能，管理员）"
+  },
+  "slash.permission.desc": {
+    "_note": "/permission 命令说明(admin) — leaf/warrant/00-module.go",
+    "default": "Admin: reload the permission matrix from permissions.yaml (reload)",
+    "zh": "管理员：从 permissions.yaml 重载权限矩阵（reload）"
+  },
+  "slash.model.desc": {
+    "_note": "/model 命令说明(admin) — leaf/model/00-module.go",
+    "default": "View the model pool; pause/resume/reload to manage entries",
+    "zh": "查看模型池状态；pause/resume/reload 管理条目"
+  },
+  "slash.webui.desc": {
+    "_note": "/webui 命令说明(admin) — leaf/webui/50-slash.go",
+    "default": "Mint a one-time token to unlock the management dashboard",
+    "zh": "铸一个一次性令牌，解锁管理仪表盘"
+  },
+  "slash.takeover.desc": {
+    "_note": "/takeover 命令说明 — leaf/webui/00-module.go",
+    "default": "Take over this session's live browser (use in a DM; the token rides the reply)",
+    "zh": "接管这个会话的实时浏览器（私聊里用，令牌随回复给出）"
+  },
+  "slash.gate.desc": {
+    "_note": "/gate 命令说明(admin) — leaf/gate/40-module.go",
+    "default": "Allow a rejected sender — /gate allow <token> (or <source> <user-id>)",
+    "zh": "放行被拒的发信人 — /gate allow <令牌>（或 <source> <user-id>）"
+  },
+  "slash.agora.desc": {
+    "_note": "/agora 命令说明 — leaf/agora/70-slash.go",
+    "default": "Manage the agora org: overview/company/hire/inbox/channel/reload",
+    "zh": "管理 agora 组织：overview/company/hire/inbox/channel/reload"
+  },
+  "slash.accounts.desc": {
+    "_note": "/accounts 命令说明 — leaf/accounts/00-module.go",
+    "default": "Manage accounts: show/new/list/mint/flow/approve/pause/apikey",
+    "zh": "管理账户：show/new/list/mint/flow/approve/pause/apikey"
+  },
+  "slash.bindaccount.desc": {
+    "_note": "/bindaccount 命令说明 — leaf/accounts/00-module.go",
+    "default": "Generate a binding code to link this channel to your account",
+    "zh": "生成绑定码，把当前通道绑到你的账户"
+  },
+  "slash.looping.desc": {
+    "_note": "/looping 命令描述 (slash registry)",
+    "default": "Toggle this chat's default turn mode: looping (long work turns) vs regular",
+    "zh": "切换本会话范围的默认 turn 模式：looping（长任务工作模式）/ regular"
+  },
+  "slash.looping.on": {
+    "_note": "/looping 切到 looping 的确认 (slashLooping) — 生效需新 session",
+    "default": "✅ Default turn mode → looping. Applies to NEW sessions: /close-session (or a fresh @ in a group) to start one now. Work runs quietly — turn /trace on to watch progress; the result arrives in one piece.",
+    "zh": "✅（默认 turn 模式 → looping。只对新 session 生效：/close-session（群里重新 @）即可开新的。工作过程静默——开 /trace 可看进度，结果一次性交付）"
+  },
+  "slash.looping.off": {
+    "_note": "/looping 切回 regular 的确认 (slashLooping)",
+    "default": "✅ Default turn mode → regular. Applies to NEW sessions; the current session keeps its birth mode.",
+    "zh": "✅（默认 turn 模式 → regular。只对新 session 生效：当前 session 保持出生时的模式）"
+  },
+  "slash.looping.usage": {
+    "_note": "/looping 参数错误 (slashLooping)",
+    "default": "Usage: /looping [on|off] — bare /looping flips.",
+    "zh": "用法：/looping [on|off]，不带参数则翻转。"
+  },
+  "slash.looping.failed": {
+    "_note": "/looping 读写偏好失败 (slashLooping)",
+    "default": "⚠️ Could not update the turn-mode preference; please retry.",
+    "zh": "⚠️（turn 模式偏好读写失败，请重试）"
+  },
+  "slash.session.turnmode": {
+    "_note": "/session 开关面板:turn 模式行 (%s=session 章, %s=scope 默认) — 80-slash.go",
+    "default": "turn mode: %s (scope default: %s)",
+    "zh": "turn 模式：%s（范围默认：%s）"
+  },
+  "slash.session.sinkprefs": {
+    "_note": "/session 开关面板:sink 偏好行 (%s=trace, %s=stream)",
+    "default": "trace: %s · stream: %s",
+    "zh": "过程追踪：%s · 流式：%s"
+  },
+  "slash.session.context": {
+    "_note": "/session 上下文量表行 (%s=上一轮实测 tokens, %s=预算 tokens, %s=压缩后消息数);— = 未知(重启后/刚压缩/该会话还没跑过轮)",
+    "default": "context (last turn): %s tokens · budget: %s · messages: %s",
+    "zh": "上下文（上一轮实测）：%s tokens · 预算：%s · 消息数：%s"
+  },
+  "slash.session.modeltags": {
+    "_note": "/session 开关面板:模型偏好章 (%s=tags) — 空则整行省略",
+    "default": "model tags: %s",
+    "zh": "模型偏好：%s"
+  },
+  "slash.session.toggle.on": {
+    "_note": "/session 开关取值:开",
+    "default": "on",
+    "zh": "开"
+  },
+  "slash.session.toggle.off": {
+    "_note": "/session 开关取值:关",
+    "default": "off",
+    "zh": "关"
+  }
+}

@@ -1,0 +1,122 @@
+# =============================================================
+# 模型服务 docker-compose —— llama.cpp(GGUF)版,CPU。
+#
+# 服务:
+#   - model-fetch : 一次性,wget 两个 GGUF 到 models 卷(幂等,已存在就跳过)
+#   - embedder    : llama-server --embeddings,Qwen3-Embedding-0.6B Q8_0,:8080
+#   - reranker    : llama-server --reranking, Qwen3-Reranker-0.6B Q8_0, :8081
+#
+# 访问(走宿主机端口,app 经 host.docker.internal):
+#   - embedder: http://host.docker.internal:8080/v1   (OpenAI /v1/embeddings)
+#   - reranker: http://host.docker.internal:8081       (llama.cpp /rerank)
+#
+# 模型来源:ggml-org 官方 GGUF 的 resolve/ 直链(公开,无需 HF 账户),用 wget 拉。
+# GPU:默认 CPU 镜像(0.6B Q8 很小);要 CUDA 把 image 换 :server-cuda 并加
+#       deploy.resources.reservations.devices(gpus)。
+# llama.cpp 加载快(无 TEI 那种数分钟 warmup);就绪由 up.sh 轮询 /v1/embeddings 与
+#       /rerank 判定,这里不设 healthcheck。
+# =============================================================
+# 每模型一个一次性 fetch 服务,各作对应 llama-server 的依赖 —— 只起 embedder 时
+# 不会顺带下 reranker 的 ~1GB(反之亦然)。$$ 转义躲开 compose 插值;下到 .tmp 再
+# mv,避免中断留半个文件被「已存在就跳过」误判为完整。
+x-fetch: &fetch
+  image: alpine:3.20
+  restart: "no"
+  volumes:
+    - models:/models
+
+services:
+  fetch-embedder:
+    <<: *fetch
+    container_name: chat-fetch-embedder
+    command:
+      - sh
+      - -c
+      - |
+        set -e; apk add --no-cache wget ca-certificates >/dev/null; cd /models
+        f=qwen3-embedding-0.6b-q8_0.gguf
+        if [ -f "$$f" ]; then echo "have $$f"; else echo "fetching $$f"; wget -q -O "$$f.tmp" "https://huggingface.co/ggml-org/Qwen3-Embedding-0.6B-Q8_0-GGUF/resolve/main/$$f" && mv "$$f.tmp" "$$f"; fi
+
+  fetch-reranker:
+    <<: *fetch
+    container_name: chat-fetch-reranker
+    command:
+      - sh
+      - -c
+      - |
+        set -e; apk add --no-cache wget ca-certificates >/dev/null; cd /models
+        f=qwen3-reranker-0.6b-q8_0.gguf
+        if [ -f "$$f" ]; then echo "have $$f"; else echo "fetching $$f"; wget -q -O "$$f.tmp" "https://huggingface.co/ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF/resolve/main/$$f" && mv "$$f.tmp" "$$f"; fi
+
+  embedder:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: chat-embedder
+    restart: unless-stopped
+    depends_on:
+      fetch-embedder:
+        condition: service_completed_successfully
+    volumes:
+      - models:/models
+    # -ub/-b = 物理/逻辑批:embedding 要求单条序列能装进物理批,长输入若报
+    # "batch too large" 就调大(app 端单条已截到 embed_max_chars)。
+    command:
+      - -m
+      - /models/qwen3-embedding-0.6b-q8_0.gguf
+      - --embeddings
+      - -c
+      - "16384"
+      - -b
+      - "4096"
+      - -ub
+      - "4096"
+      - --parallel
+      - "2"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+    ports:
+      - "8080:8080"
+
+  reranker:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: chat-reranker
+    restart: unless-stopped
+    depends_on:
+      fetch-reranker:
+        condition: service_completed_successfully
+    volumes:
+      - models:/models
+    command:
+      - -m
+      - /models/qwen3-reranker-0.6b-q8_0.gguf
+      - --reranking
+      - -c
+      - "8192"
+      - -b
+      - "4096"
+      - -ub
+      - "4096"
+      - --parallel
+      - "2"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+    ports:
+      - "8081:8080"
+
+volumes:
+  models:
+    name: chat_models
+
+# =============================================================
+# 单独起(up.sh 会自动做;手动时):
+#   docker compose up -d            # model-fetch 先跑完(下模型),再起 embedder/reranker
+#   docker compose logs -f embedder
+# 验证:
+#   curl http://localhost:8080/v1/embeddings -H 'Content-Type: application/json' \
+#        -d '{"input":"test","model":"qwen3-embedding-0.6b-q8_0.gguf"}'
+#   curl http://localhost:8081/rerank -H 'Content-Type: application/json' \
+#        -d '{"query":"a","documents":["b","c"]}'
+# =============================================================

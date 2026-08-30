@@ -1,0 +1,34 @@
+# Anima 2B turbo —— 动漫 / 二次元。提示词吃 Danbooru 标签。
+# 蒸馏档：10 步、CFG 1.0，负面提示词同样不起作用（质量档 comfyui-anima-hq 才起作用）。
+unet:
+  node: UNETLoader
+  file: anima-turbo-v1.0.safetensors
+  inputs:
+    weight_dtype: default
+clip:
+  node: CLIPLoader
+  file: qwen_3_06b_base.safetensors
+  type: qwen_image
+vae: qwen_image_vae.safetensors
+latent: EmptySD3LatentImage           # 与 klein 不同：Anima 要 SD3 形状的空 latent
+sampling:
+  steps: 10
+  cfg: 1.0
+  sampler: euler
+  scheduler: simple
+negative: ""
+# 上限来自这张卡（P104-100 / 8 GB）：1536² 实测通过，是硬顶。
+sizes:
+  square:    [1024, 1024]
+  portrait:  [832, 1216]
+  landscape: [1216, 832]
+timeout_s: 60
+denoise:
+  slight:   0.45
+  moderate: 0.55
+  heavy:    0.8
+
+# —— 对外元数据 ——
+summary: 动漫 / 二次元。提示词写英文的逗号分隔标签（1girl, long hair, …）。
+eta: 约 10 秒
+guide: anima          # 与 comfyui-anima-hq 共用一份：两档要放在一起比才选得动

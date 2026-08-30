@@ -1,0 +1,230 @@
+# agentbob — one-command run.
+#
+#   docker compose up -d
+#
+# Pre-req:
+#   - ~/.bob/.env exists with TELEGRAM_BOT_TOKEN=…  (run `cp .env.example
+#     ~/.bob/.env && $EDITOR ~/.bob/.env` if you haven't yet)
+#   - ~/.bob/models.yaml (or legacy model.* in ~/.bob/config.yaml) points
+#     at a reachable model server. From inside the container, "localhost"
+#     means the container itself — for a model on your host machine use
+#     `host.docker.internal` (Docker Desktop) or the host's LAN IP.
+#
+# Filesystem visibility:
+#   The bot lives inside the container. It can ONLY see paths that are
+#   mounted in via `volumes:`. The default mount of ~/.bob covers state
+#   (sessions / memory / skills / logs / sandbox) but the bot can't see
+#   your host's project files unless you mount them too — see the read /
+#   write examples below. After mounting, declare the in-container paths
+#   in ~/.bob/config.yaml under tools.filesystem.read_roots /
+#   read_write_roots so the path-allowlist accepts them.
+
+services:
+  bob:
+    build:
+      context: .
+      args:
+        # Stamp the running build's version (lands in $BOB_HOME/VERSION + the startup
+        # log). Easiest: run `./scripts/deploy.sh`, which sets it to "<branch>@<sha>".
+        # Manually: `BOB_VERSION="$(git rev-parse --abbrev-ref HEAD)@$(git rev-parse --short HEAD)" docker compose up -d --build bob`.
+        # Defaults to "dev" when unset.
+        BOB_VERSION: ${BOB_VERSION:-dev}
+    # Namespaced so this deploy never collides with another bob (e.g. the skeleton
+    # deploy). scripts/deploy.sh sets these to "<branch>" automatically; the defaults
+    # below isolate this branch even on a bare `docker compose up`. To run two bobs
+    # at once also set distinct BOB_WEBUI_PORT and BOB_MODELGATE_PORT (both are
+    # published below — a collision fails the start with "port is already
+    # allocated") and point BOB_DSN at a SEPARATE database (the rebuild's schema
+    # is incompatible — never share the skeleton's DB).
+    image: ${BOB_IMAGE:-bob:trunk-rebuild}
+    container_name: ${BOB_CONTAINER:-bob-trunk-rebuild}
+    restart: unless-stopped
+
+    # webui dashboard. Inside the container it MUST bind 0.0.0.0 (not the cmd
+    # default 127.0.0.1) or NEITHER docker's port-forward NOR the cloudflared
+    # sidecar (which reaches it at bob:9877 across the compose bridge) can see
+    # it — so BOB_WEBUI_ADDR is set to 0.0.0.0:9877 here. Two ways in:
+    #   - host:80 → container:9877 (LAN, no TLS) via the port map below;
+    #   - public HTTPS via the cloudflared service (opens no inbound port).
+    # Reads are public-but-redacted; admin writes need a chat-minted token
+    # (/webui slash). Set BOB_WEBUI_ADDR=off to disable the http server.
+    # WHERE TO SET THE THREE ${…} BELOW: this block wins over `env_file:`, so a
+    # value put in ${BOB_STATE_DIR}/.env (where the DSN and tokens live) is
+    # silently ignored for these three. They are compose INTERPOLATION — they
+    # read the shell env or a .env sitting next to THIS file. So:
+    #   BOB_MODELGATE_ADDR=off ./scripts/deploy.sh     ← works
+    #   echo 'BOB_MODELGATE_ADDR=off' >> ~/.bob-<branch>/.env   ← does NOT
+    environment:
+      - BOB_WEBUI_ADDR=${BOB_WEBUI_ADDR:-0.0.0.0:9877}
+      # modelgate — the OpenAI-compatible face of the model pool
+      # (docs/modelgate-api-guide.md). Same 0.0.0.0 story as the webui above:
+      # the process default is "off", and a loopback bind would be invisible
+      # to the port map below. Callers authenticate with an api key minted in
+      # chat and billed to an account (docs/modelgate-apikey.md) — but the
+      # transport is plain HTTP, so keep the published port on the LAN and
+      # let cloudflared front anything that needs to be reachable off-box.
+      #
+      # NOTE this line turns modelgate ON for every `docker compose up` — the
+      # binary's own default is off (cmd/bob envOr), and it was only this
+      # deploy's uncommitted local edit until. Unauthenticated
+      # callers get 401 on all three routes and 404 elsewhere, but the port IS
+      # published on every host interface and docker's publish bypasses host
+      # ufw/iptables. BOB_MODELGATE_ADDR=off (see the WHERE TO SET note above)
+      # disables the listener; drop the port line below to unpublish it.
+      - BOB_MODELGATE_ADDR=${BOB_MODELGATE_ADDR:-0.0.0.0:8091}
+      # Container timezone. Without it the image runs on UTC, and that leaks
+      # into two places a human reads: every webui panel timestamp (clock.Stamp
+      # renders local), and the system prompt's 当前日期 — which between 20:00
+      # and midnight local told the model it was already tomorrow. The base
+      # image (debian:bookworm-slim) ships /usr/share/zoneinfo, so this is the
+      # only knob needed; a move to a scratch/distroless runtime would also
+      # need `import _ "time/tzdata"` in cmd/bob.
+      - TZ=${TZ:-America/New_York}
+    ports:
+      - "${BOB_WEBUI_PORT:-80}:9877"
+      - "${BOB_MODELGATE_PORT:-8091}:8091"
+
+    # /dev/shm cap. Docker's 64MB default makes Chromium fail to launch
+    # under load — "chrome failed to start" with stderr cut off mid-line
+    # (see browser tool). 3GB is generous headroom; tmpfs is lazy — host
+    # RAM is only used by what Chromium actually writes, not the cap.
+    shm_size: '2gb'
+
+    # TD1 partial — see docs/security-design.md §"Container
+    # hardening" for the full hardening menu (cap_drop, read_only, etc.)
+    # we deferred. These two are zero-risk-of-breaking-chromium:
+    #   no-new-privileges:true   — blocks setuid escalation inside the
+    #                              container (bob runs as UID 1000, but
+    #                              any package's setup.py could try sudo
+    #                              / setuid binaries; this hard-stops).
+    #   pids_limit: 512          — caps process count so a runaway fork
+    #                              bomb (malicious pip pkg / model-
+    #                              generated python) self-implodes
+    #                              instead of taking down host.
+    # bob main + chromium pool (4 sessions × ~10 procs each) ≈ 50; 512
+    # is generous headroom.
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+
+    volumes:
+      # 1) Persist state. ALWAYS mount this — sessions, memory, skills,
+      #    logs, the per-session sandbox dir all live here. ISOLATED from the
+      #    skeleton deploy's ~/.bob by default (this branch's schema differs);
+      #    scripts/deploy.sh sets BOB_STATE_DIR=~/.bob-<branch>.
+      - ${BOB_STATE_DIR:-${HOME}/.bob-trunk-rebuild}:/data/.bob
+
+      # 2) Read-only project / docs mounts. The bot can read these via
+      #    read_file / search_files. Declare in config.yaml:
+      #      tools:
+      #        filesystem:
+      #          read_roots: [/work/agentbob, /work/notes]
+      # - ${HOME}/Documents/dev/agent/agentbob:/work/agentbob:ro
+      # - ${HOME}/Documents/notes:/work/notes:ro
+
+      # 3) Read-write scratch mount. The bot can write here via patch /
+      #    execute_code / terminal output. Declare in config.yaml:
+      #      tools:
+      #        filesystem:
+      #          read_write_roots: [/work/scratch]
+      # - ${HOME}/scratch:/work/scratch:rw
+
+      # 4) (Optional) SSH dir for any future ssh_exec tool. Read-only.
+      # - ${HOME}/.ssh:/home/bob/.ssh:ro
+
+    # BOB_POSTGRES_DSN + TELEGRAM_BOT_TOKEN + provider API keys. MUST follow the
+    # state dir (NOT ~/.bob) so this branch reads its OWN DSN — pointing at the
+    # skeleton's .env would migrate/wipe the skeleton's database.
+    env_file:
+      - ${BOB_STATE_DIR:-${HOME}/.bob-trunk-rebuild}/.env
+
+    # Reach the host's LAN: on Linux uncomment network_mode: host (containers
+    # otherwise route LAN through the docker bridge); on macOS / Windows the
+    # default bridge already reaches LAN IPs and host.docker.internal works.
+    # network_mode: host
+
+  # browserd — out-of-process browser service (docs/browserd.md). OPT-IN
+  # ("要用就起"). The browser engine lives in-tree at sidecars/browser/ (a
+  # self-contained nested Go module). To enable:
+  #   1. ./sidecars/browser/build.sh         # → image browserd:latest
+  #   2. add to bob's .env:  BROWSERD_URL=http://browserd:8377
+  #   3. uncomment this service, then: docker compose up -d browserd bob
+  #
+  # The single `browser` tool (action=navigate/click/…) then lights up as a thin
+  # HTTP shell; chromium runs in THIS container only, under its own mem_limit —
+  # browser pressure can OOM browserd but never bob (the whole point of the split).
+  #
+  # browserd:
+  #   # Pre-built by sidecars/browser/build.sh (the engine + its own vendored
+  #   # go.mod live under sidecars/browser/). NOT a `build:` block here: the image
+  #   # is built from that nested-module context, not this compose's repo root.
+  #   image: browserd:latest
+  #   container_name: ${BOB_CONTAINER:-bob-trunk-rebuild}-browserd
+  #   restart: unless-stopped
+  #   # Optional control-plane API key (A1, docs/browserd.md §6). The control
+  #   # plane has no transport security; this adds an app-layer bearer check on
+  #   # top of network isolation. Set the SAME value here and in bob's env (so
+  #   # bob's browser client sends it) — leave it in ~/.bob/.env, never inline a
+  #   # real secret in this committed file:
+  #   #   environment:
+  #   #     BROWSERD_API_KEY: ${BROWSERD_API_KEY}
+  #   # (bob's service reads ~/.bob/.env via env_file, so BROWSERD_API_KEY is
+  #   # already on bob's side; alternatively set tools.browser.api_key in
+  #   # config.yaml — env wins.) Unset = open control plane + a browserd WARN.
+  #   # Same /dev/shm story as bob's service above — chromium needs it.
+  #   shm_size: '2gb'
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   pids_limit: 512
+  #   # Hard memory ceiling — the second of the two concurrency gates
+  #   # (docs/browserd.md §5): tools.browser.max_concurrent_sessions is the
+  #   # soft gate (LRU-close), mem_limit is the OOM backstop. Size it to
+  #   # roughly max_concurrent_sessions × ~400MB + headroom.
+  #   mem_limit: 4g
+  #   volumes:
+  #     # browserd's $BOB_HOME: the profile vault (login-state MASTER copies
+  #     # under credentials/browser-profiles/) + an optional config.yaml for
+  #     # tools.browser.* tuning. A named volume so profiles survive image
+  #     # rebuilds; use a host bind-mount instead if you want to edit the
+  #     # config / inspect profiles from the host.
+  #     - browser-profiles:/data/.browserd
+  #     # Shared sandbox mount — REQUIRED for browser_snapshot format=image
+  #     # (docs/browserd.md §P1). In remote mode bob sends its per-session
+  #     # sandbox path and browserd writes the PNG there; bob then resolves the
+  #     # relative path via read_file. The two containers MUST see that path
+  #     # (under ~/.bob/sandbox) at the SAME location, so mount bob's $BOB_HOME
+  #     # here too. Without it format=image writes into browserd's own writable
+  #     # layer — bob can't read the file (feature silently broken) and the PNGs
+  #     # accumulate there until the container is recreated. Omit ONLY if you
+  #     # never use format=image (tree/text/html snapshots don't need it). Trunk's
+  #     # namespaced state dir (must match bob's volume mount above).
+  #     - ${BOB_STATE_DIR:-${HOME}/.bob-trunk-rebuild}:/data/.bob
+  #   # NO `ports:` entry for 8377 — the control plane has no transport
+  #   # security and must stay on the compose-internal network (bob reaches it
+  #   # as http://browserd:8377); the optional BROWSERD_API_KEY above is
+  #   # defence-in-depth ON TOP of that, NOT a licence to publish the port.
+  #   # NO `ports:` entry for 8378 either — the takeover face is consumed by
+  #   # bob ONLY: bob's webui proxies screencast/input to browserd:8378 and the
+  #   # human takes over through bob's own origin (docs/browserd.md §4). No
+  #   # public URL, no CORS origin, no second tunnel hostname to configure.
+
+  # Cloudflare Tunnel — fronts the webui with public HTTPS without opening
+  # any inbound port. cloudflared connects OUTBOUND to Cloudflare's edge;
+  # the tunnel's public hostname is routed to this container, which reaches
+  # the webui at bob:9877 over the compose's default bridge network — so
+  # `bob` must NOT be switched to network_mode: host, or this name stops
+  # resolving. TUNNEL_TOKEN comes from ~/.bob/.env (outside the repo, never
+  # committed). See docs/web-ui-design.md §2.2.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: ${BOB_CONTAINER:-bob-trunk-rebuild}-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    env_file:
+      - ${BOB_STATE_DIR:-${HOME}/.bob-trunk-rebuild}/.env
+    depends_on:
+      - bob
+
+# Named volumes — only used by the optional browserd service above.
+# volumes:
+#   browser-profiles:

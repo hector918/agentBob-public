@@ -1,0 +1,4 @@
+# Placeholder so the Dockerfile's `COPY models/` is valid before the real
+# PP-OCRv6 ONNX files are dropped in. Replace with det.onnx / rec.onnx / keys.txt
+# (see ../README.md). With no real models present the sidecar boots but falls
+# back to RapidOCR's bundled v4 models and reports "v6_models": false on /healthz.

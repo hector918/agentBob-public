@@ -1,0 +1,6 @@
+rapidocr-onnxruntime==1.4.4
+opencv-python-headless==4.10.0.84
+fastapi==0.115.4
+uvicorn[standard]==0.32.0
+pillow==11.0.0
+python-multipart==0.0.12

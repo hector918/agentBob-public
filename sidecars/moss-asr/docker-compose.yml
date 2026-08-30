@@ -1,0 +1,74 @@
+# Standalone compose for the moss-asr sidecar — runs on the SIDECAR server (its own
+# box, NOT with bob). From this directory:
+#
+#   docker compose up -d --build
+#
+# The build compiles the ggml CLI and downloads the pre-converted GGUF (~620 MB at
+# q5_k, needs network), baking both into the image. bob then reaches this over the LAN
+# at http://<this-host>:11503 — set that as the base_url of the `kind: asr` entry in
+# bob's models.yaml. Full steps + verify checklist: README.md.
+services:
+  moss-asr:
+    build:
+      context: .
+      args:
+        # Space-separated list — ALL of these get baked in, and which one runs is a
+        # RUNTIME choice (MOSS_QUANT below). Adding one costs image size; switching
+        # between the baked ones costs nothing.
+        MOSS_QUANTS: "q5_k q4_k"
+        MT_REF: master
+    image: moss-asr
+    container_name: moss-asr
+    restart: unless-stopped
+    ports:
+      - "11503:11503"        # LAN-published; bob uses http://<this-host>:11503
+    networks:
+      - default
+      - sidecar-net          # how nginx-lb actually reaches us — see below
+    # Weights are 619 MB and ggml mmaps them; the variable part is the KV cache, which
+    # scales with CLIP LENGTH (a 90-minute recording generates tens of thousands of
+    # tokens) rather than with request count. 8g is headroom on a 32 GB box, not a
+    # measurement — being wrong fails as an OOM-kill (exit 137) under
+    # restart: unless-stopped, i.e. a silent restart loop rather than an ASR error.
+    # Trim once real RSS is known (`docker stats moss-asr` with a long clip in flight).
+    mem_limit: 8g
+    environment:
+      # Which baked quant to serve. Changing it is `docker compose up -d` — no rebuild.
+      MOSS_QUANT: "q5_k"
+      # 8 threads on a 10-core/20-thread box: the port's own benchmarks used 8, and
+      # oversubscribing an autoregressive decode past the physical cores costs more in
+      # contention than it gains. Tune against the box, don't assume — a sweep can also
+      # override both per request (`"moss": {"quant": ..., "threads": ...}`) without a
+      # restart at all.
+      MTD_THREADS: "8"
+      # Clips under MOSS_SHORT_SECONDS get MTD_THREADS_SHORT instead. Short audio is the
+      # latency-critical case (a human is waiting on the turn to start) and it is brief,
+      # so borrowing the box's remaining cores for a few seconds is worth it; long
+      # recordings run on-demand and stay polite. Measured: 4.1s clip, 8→10 threads is
+      # 16.0s→14.1s, and past the 10 physical cores it flattens.
+      MTD_THREADS_SHORT: "10"
+      MOSS_SHORT_SECONDS: "15"
+      # Generation ceiling. 8192 covers roughly a 20-30 minute recording (MOSS spends
+      # tokens on timestamps and speaker labels as well as words); raise it before
+      # feeding anything longer, or the transcript truncates silently at the cap.
+      MOSS_MAX_NEW: "8192"
+      # Wall-clock ceiling for one CLI run. Far above bob's own 60 s transcribeTimeout
+      # on purpose — bob giving up first is bob's policy to set; this only stops a
+      # wedged subprocess pinning a worker forever.
+      MOSS_RUN_TIMEOUT: "1800"
+
+# The sidecar box fronts every sidecar with an nginx-lb container that proxies by
+# CONTAINER NAME. That name only resolves on the network nginx-lb shares with us —
+# `sidecar-net`, which lives outside this compose project. Declaring it here (rather
+# than attaching by hand afterwards) is what makes the wiring survive a rebuild.
+#
+# fun-asr learned this the hard way on: a rebuild brought it back on its own
+# default network only, nginx-lb could no longer resolve the name, and every /asr/*
+# request 502'd — while the service answered fine on the host's published port, so a
+# direct-to-host probe still looked green.
+#
+# NOTE: nginx-lb's own config still routes /asr/ to fun-asr:11502. Pointing it at
+# moss-asr:11503 is a change on the SIDECAR BOX, not in this file.
+networks:
+  sidecar-net:
+    external: true           # pre-existing + shared; this project attaches, never owns

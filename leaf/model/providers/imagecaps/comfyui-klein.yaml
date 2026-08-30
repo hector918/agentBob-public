@@ -1,0 +1,32 @@
+# FLUX.2 klein 4B —— 写实 / 通用。提示词写自然语言。
+# 蒸馏模型，4 步出图、CFG 恒为 1.0：步数或 CFG 调高只会出伪影，负面提示词不起作用。
+unet:
+  node: UnetLoaderGGUF
+  file: flux-2-klein-4b-Q5_K_M.gguf
+clip:
+  node: CLIPLoaderGGUF
+  file: Qwen3-4B-UD-Q4_K_XL.gguf     # Q4：编码器进得了显存，这是 512² 从 75s 降到 15.9s 的原因
+  type: flux2
+vae: flux2-vae.safetensors           # 不能用 FLUX.1 的 VAE 代替，会严重偏色
+latent: EmptyLatentImage
+sampling:
+  steps: 4
+  cfg: 1.0
+  sampler: euler
+  scheduler: simple
+negative: ""                         # CFG=1.0，写了也不起作用
+# 上限来自这张卡（GTX 1070 / 8 GB）：1024² 在采样阶段 OOM，960² 与 768×1024 是硬顶。
+sizes:
+  square:    [768, 768]
+  portrait:  [768, 1024]
+  landscape: [1024, 768]
+timeout_s: 90                        # 含冷启动余量（容器重启后首张约 47s）
+denoise:                             # 实测：0.3 / 0.4 提示词完全不生效且不报错
+  slight:   0.45
+  moderate: 0.55
+  heavy:    0.8
+
+# —— 对外元数据：目录一行、耗时、以及这个 style 用哪份提示词说明书 ——
+summary: 写实 / 通用。提示词写英文的自然语言句子，越具体越好。
+eta: 约 30 秒
+guide: flux2-klein

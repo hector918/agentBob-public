@@ -1,0 +1,40 @@
+# Fun-ASR sidecar deps. torch/torchaudio are installed separately from the CPU
+# wheel index in the Dockerfile (keeps the image off the CUDA build). The
+# model's custom code is fetched via trust_remote_code at load (baked into the
+# HF cache at build time).
+
+# 1.4.0 is the first release that can actually SERVE Fun-ASR-Nano-2512. Every
+# earlier line fails, each with an error naming neither the module nor the cause
+# (funasr swallows import failures behind bare `except: pass` in three separate
+# places). What 1.4.0 fixes, in the order we hit them:
+#
+#   <1.2.8  no funasr/models/fun_asr_nano/ at all      → "FunASRNano is not registered"
+#   <1.4.0  model.py does `from funasr import AutoModel` at import time, which
+#           runs DURING funasr's own package init, before AutoModel is bound →
+#           ImportError, swallowed, class never registers → same message again
+#   <1.3.0  builds the LLM with AutoModelForCausalLM.from_pretrained(), but this
+#           repo ships Qwen3-0.6B/ with config + tokenizer ONLY (all weights live
+#           in model.pt) → "no file named model.safetensors found in .../Qwen3-0.6B".
+#           1.3.0+ switched to AutoConfig + from_config, which is correct here.
+#   <1.4.0  inference runs under torch.cuda.amp.autocast — and llm_dtype is bf16
+#           in the model's config.yaml, so it is enabled. This sidecar is CPU-only.
+#           1.4.0 resolves the autocast device type instead.
+#
+# 1.4.0 also declares transformers / tiktoken / safetensors / huggingface_hub as
+# real runtime deps (they were extras-only before), which is what made the very
+# first failure possible.
+funasr==1.4.0
+
+# Still pinned explicitly even though funasr 1.4.0 now requires it: funasr leaves
+# it unbounded, and transformers 5.x is a breaking rewrite. 4.57.3 verified
+# against this model — it reads the shipped Qwen3-0.6B config (model_type qwen3,
+# 28 layers) and funasr 1.4.0 imports cleanly on top of it.
+transformers==4.57.3
+
+# >=0.34 is required by transformers 4.57 (0.27.1 conflicts).
+# Still ships the `huggingface-cli` entry point the Dockerfile uses.
+huggingface_hub==0.36.0
+
+soundfile==0.12.1
+fastapi==0.115.4
+uvicorn[standard]==0.32.0

@@ -1,0 +1,32 @@
+    # ============================================================
+    # 语音识别 · MOSS  (moss-transcribe.cpp, 容器 moss-asr, 容器内 11503)
+    #   /moss/healthz                -> /healthz
+    #   /moss/v1/models              -> /v1/models
+    #   /moss/v1/chat/completions    -> /v1/chat/completions   (bob 走这个)
+    #   /moss/v1/audio/transcriptions-> /v1/audio/transcriptions
+    #
+    # 刻意与 /asr/ 并存，不是替换它:两个前缀同时在线，才能拿同一批音频对着
+    # fun-asr 和 MOSS 各打一次做真正的 A/B。bob 那边同 kind 的低优先级条目只在
+    # 高优先级挂掉时才轮到,靠模型池是比不出质量的。验完再决定 /asr/ 改不改指向。
+    # ============================================================
+    location /moss/ {
+        set $moss moss-asr;
+        rewrite ^/moss/(.*)$ /$1 break;
+        proxy_pass http://$moss:11503;
+
+        # server 块的 300s 是按 fun-asr 定的(RTF 0.15,65 秒音频 10 秒)。MOSS 在
+        # 这台 Broadwell 上 RTF 约 0.4,一段 20 分钟的录音就要跑十几分钟 —— 300s
+        # 会在模型还在解码时把连接掐掉,而且表现为 504 而不是超时错误,很难认。
+        proxy_read_timeout 1800s;
+        proxy_send_timeout 1800s;
+
+        # server 块是 16m。按 bob 送来的 flac(16kHz 单声道 ≈ 24.5 KB/s)再算上
+        # base64 的 1.33 倍膨胀,16m 只够约 8 分钟音频 —— 而"单次吃 90 分钟"正是
+        # 换 MOSS 的理由。这里按 location 覆盖,不动全局(embedding / agent 都不需要
+        # 这么大的体,放开只会扩大它们的暴露面)。
+        #   200m ≈ 90 分钟 flac 的 base64 体积,留了余量。
+        client_max_body_size 200m;
+
+        # 大体请求先落盘再转发,避免 200m 全部堆在内存里。
+        client_body_buffer_size 1m;
+    }

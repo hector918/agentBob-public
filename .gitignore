@@ -1,0 +1,16 @@
+/bob
+/agentbob
+/.claude/
+*.test
+*.out
+*.log
+.env
+.DS_Store
+/dist/
+/scripts/dev/ssh-remote
+/ssh-remote
+code.ssh
+
+# Python bytecode (sidecars/*/ are python; keep build artifacts out of the tree)
+__pycache__/
+*.py[cod]

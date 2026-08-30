@@ -1,0 +1,61 @@
+# =============================================================
+# 主体 docker-compose (轻量, 不带模型)
+#   - PostgreSQL (pgvector pg16)
+#   - 主体 API (FastAPI)
+# 模型服务 (embedder + reranker) 见另一份 compose, 经 host.docker.internal 访问。
+# =============================================================
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: chat-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chat
+      POSTGRES_PASSWORD: chat_password_change_me
+      POSTGRES_DB: chatdata
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U chat -d chatdata"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      # 用宿主网络构建:buildkit 默认网络的 DNS 在本机解析不了 apt/pip 源(普通
+      # docker run 能到公网、build 却不行),host 网络绕开这个。
+      network: host
+    container_name: chat-app
+    restart: unless-stopped
+    # RETRIEVAL_ENV_FILE lets the config live OUTSIDE the (churning) repo checkout —
+    # up.sh points it at ~/.chat-retrieval/.env. Falls back to ./app/.env for a manual
+    # `docker compose` run.
+    env_file:
+      - ${RETRIEVAL_ENV_FILE:-./app/.env}
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # 让 app 能解析宿主机, 用于连 embedder/reranker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  pg_data:
+    name: chat_pg_data
+
+networks:
+  default:
+    name: chat-net
