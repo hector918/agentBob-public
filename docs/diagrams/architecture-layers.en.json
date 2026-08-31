@@ -1,0 +1,461 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "agentbob — mechanism and policy in five layers",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1380,
+      600
+    ],
+    "repository": {
+      "url": "https://github.com/hector918/agentBob-public",
+      "revision": "5c2f7acb1f6843ebb294b010580e54e6e0fb6548"
+    },
+    "views": [
+      {
+        "id": "ingress-to-reply",
+        "label": "Ingress to reply",
+        "focus": [
+          "platforms",
+          "ingress",
+          "flows",
+          "core",
+          "caps"
+        ],
+        "note": "A chat event enters, a flow decides policy, the turn core runs it, the reply streams back out."
+      },
+      {
+        "id": "thin-spine",
+        "label": "The thin spine",
+        "focus": [
+          "data",
+          "trunk",
+          "heartwood",
+          "contract"
+        ],
+        "note": "Registry, lifecycle and housekeeping carry no business knowledge; contracts and shared primitives sit beneath them."
+      },
+      {
+        "id": "out-of-process",
+        "label": "Out of process",
+        "focus": [
+          "caps",
+          "sidecars"
+        ],
+        "note": "Dependency-heavy services carry their own go.mod, so the boundary is enforced at compile time as well as at runtime."
+      },
+      {
+        "id": "guardrails",
+        "label": "Guardrails",
+        "focus": [
+          "arch",
+          "trunk"
+        ],
+        "note": "The approved connection graph is a test: gaining or losing an edge turns it red."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "platforms",
+      "type": "external",
+      "label": "Chat platforms",
+      "sublabel": "WebSocket · IMAP · SMTP",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        205,
+        64
+      ]
+    },
+    {
+      "id": "flows",
+      "type": "backend",
+      "label": "flow/ — policy",
+      "sublabel": "router · normal · agora · intro · inbound",
+      "pos": [
+        260,
+        40
+      ],
+      "size": [
+        600,
+        64
+      ],
+      "sources": [
+        {
+          "path": "flow/router/10-router.go",
+          "label": "priority + Accepts selection"
+        },
+        {
+          "path": "flow/inbound/10-flow.go",
+          "label": "edge-of-process dispatch"
+        }
+      ]
+    },
+    {
+      "id": "ingress",
+      "type": "backend",
+      "label": "Ingress & identity",
+      "sublabel": "stoma · gate · accounts · adminline",
+      "pos": [
+        260,
+        159
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "Conversation core",
+      "sublabel": "session · turn · model · prompt",
+      "pos": [
+        605,
+        159
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "caps",
+      "type": "backend",
+      "label": "Capabilities",
+      "sublabel": "tools · warrant · skills · asr",
+      "pos": [
+        950,
+        159
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "sidecars",
+      "type": "cloud",
+      "label": "sidecars/",
+      "sublabel": "browser · ASR · OCR",
+      "pos": [
+        975,
+        40
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "data",
+      "type": "database",
+      "label": "Data & foundations",
+      "sublabel": "pgpool · retrieval · credentials",
+      "pos": [
+        260,
+        278
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "Interfaces",
+      "sublabel": "webui · slash",
+      "pos": [
+        605,
+        278
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "org",
+      "type": "backend",
+      "label": "Organisation",
+      "sublabel": "agora · arrangement · learn",
+      "pos": [
+        950,
+        278
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "arch",
+      "type": "security",
+      "label": "arch/",
+      "sublabel": "rules welded into tests",
+      "pos": [
+        1180,
+        40
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "arch/10-boundary_test.go",
+          "label": "leaf modules never import each other"
+        },
+        {
+          "path": "arch/30-provide_test.go",
+          "label": "runtime Provide sites + dead wiring"
+        },
+        {
+          "path": "arch/50-heartwood_test.go",
+          "label": "admission bar for heartwood"
+        }
+      ]
+    },
+    {
+      "id": "trunk",
+      "type": "messagebus",
+      "label": "trunk — the thin spine",
+      "sublabel": "registry · lifecycle · housekeeping",
+      "pos": [
+        260,
+        397
+      ],
+      "size": [
+        910,
+        64
+      ],
+      "sources": [
+        {
+          "path": "trunk/10-registry.go",
+          "label": "interface → single implementation"
+        },
+        {
+          "path": "trunk/20-lifecycle.go",
+          "label": "Provides/Needs topological start"
+        },
+        {
+          "path": "trunk/30-housekeeping.go",
+          "label": "one worker, one priority queue"
+        }
+      ]
+    },
+    {
+      "id": "heartwood",
+      "type": "backend",
+      "label": "heartwood",
+      "sublabel": "prompt · clock · files · scrub",
+      "pos": [
+        260,
+        516
+      ],
+      "size": [
+        430,
+        64
+      ],
+      "sources": [
+        {
+          "path": "heartwood/prompt/20-sanitize.go",
+          "label": "one speaker-injection defence"
+        },
+        {
+          "path": "heartwood/clock/00-clock.go",
+          "label": "one time scale across hosts"
+        },
+        {
+          "path": "heartwood/scrub/scrub.go",
+          "label": "byte-identical redaction"
+        }
+      ]
+    },
+    {
+      "id": "contract",
+      "type": "backend",
+      "label": "contract",
+      "sublabel": "interfaces · envelopes · grammar",
+      "pos": [
+        740,
+        516
+      ],
+      "size": [
+        270,
+        64
+      ],
+      "sources": [
+        {
+          "path": "contract/00-doc.go",
+          "label": "what earns a place here"
+        },
+        {
+          "path": "contract/84-flow.go",
+          "label": "FlowRegistry / TurnHandler"
+        },
+        {
+          "path": "contract/91-tool.go",
+          "label": "tool catalog envelope"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "flow/ — policy: how one kind of conversation runs",
+      "wraps": [
+        "flows"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "leaf/ — 30 registered modules; they never import each other",
+      "wraps": [
+        "ingress",
+        "core",
+        "caps",
+        "data",
+        "ui",
+        "org"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "mechanism: what the system can do",
+      "wraps": [
+        "trunk",
+        "heartwood",
+        "contract"
+      ],
+      "pad": 10
+    }
+  ],
+  "connections": [
+    {
+      "id": "events-in",
+      "from": "platforms",
+      "to": "ingress",
+      "label": "chat events",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "screened",
+      "from": "ingress",
+      "to": "flows",
+      "label": "screened, batched by session",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "turnspec",
+      "from": "flows",
+      "to": "core",
+      "label": "TurnSpec: identity · prompt · tool bag",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDx": 80
+    },
+    {
+      "id": "tool-rounds",
+      "from": "core",
+      "to": "caps",
+      "label": "tool rounds",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "sidecar-http",
+      "from": "caps",
+      "to": "sidecars",
+      "label": "HTTP",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "reply-out",
+      "from": "core",
+      "to": "ingress",
+      "label": "streamed reply → sink",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "wiring",
+      "from": "data",
+      "to": "trunk",
+      "label": "Provides / Needs",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "heartwood-modules",
+      "from": "heartwood",
+      "to": "trunk",
+      "label": "3 packages register as modules",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "registry-keys",
+      "from": "trunk",
+      "to": "contract",
+      "label": "registry keys are capability interfaces",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDx": 60
+    },
+    {
+      "id": "guard",
+      "from": "arch",
+      "to": "trunk",
+      "label": "welds the approved graph into tests",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "right"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Mechanism vs policy",
+      "items": [
+        "What the system can do sinks into pluggable modules",
+        "How a conversation is orchestrated floats up into flows"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "The trunk is a match-maker, not a mediator",
+      "items": [
+        "Providers register once at Start; consumers Require once at wiring",
+        "After that the call is point-to-point — the spine is off the hot path"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Boundaries that fail loudly",
+      "items": [
+        "leaf modules never import each other; heartwood is the single exception",
+        "A sidecar carries its own go.mod, so it cannot reach contract at all"
+      ]
+    }
+  ]
+}

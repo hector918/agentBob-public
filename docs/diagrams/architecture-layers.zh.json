@@ -1,0 +1,460 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "agentbob — 机制与策略的五层结构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1380,
+      600
+    ],
+    "repository": {
+      "url": "https://github.com/hector918/agentBob-public",
+      "revision": "5c2f7acb1f6843ebb294b010580e54e6e0fb6548"
+    },
+    "views": [
+      {
+        "id": "ingress-to-reply",
+        "label": "从入口到回复",
+        "focus": [
+          "platforms",
+          "ingress",
+          "flows",
+          "core",
+          "caps"
+        ],
+        "note": "一条聊天事件进来，由 flow 决定策略，turn 核心跑完，回复再流式发回去。"
+      },
+      {
+        "id": "thin-spine",
+        "label": "薄脊梁",
+        "focus": [
+          "data",
+          "trunk",
+          "heartwood",
+          "contract"
+        ],
+        "note": "注册表、生命周期、housekeeping 都不含业务知识；契约与共享原语垫在它们下面。"
+      },
+      {
+        "id": "out-of-process",
+        "label": "进程外",
+        "focus": [
+          "caps",
+          "sidecars"
+        ],
+        "note": "重依赖服务自带 go.mod，所以这条边界在编译期和运行期同时成立。"
+      },
+      {
+        "id": "guardrails",
+        "label": "护栏",
+        "focus": [
+          "arch",
+          "trunk"
+        ],
+        "note": "认可的连接图本身是一个测试：多一条边少一条边都会变红。"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "platforms",
+      "type": "external",
+      "label": "聊天平台",
+      "sublabel": "WebSocket · IMAP · SMTP",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        205,
+        64
+      ]
+    },
+    {
+      "id": "flows",
+      "type": "backend",
+      "label": "flow/ — 策略层",
+      "sublabel": "router · normal · agora · intro · inbound",
+      "pos": [
+        260,
+        40
+      ],
+      "size": [
+        600,
+        64
+      ],
+      "sources": [
+        {
+          "path": "flow/router/10-router.go",
+          "label": "按 Priority 选，取第一个 Accepts"
+        },
+        {
+          "path": "flow/inbound/10-flow.go",
+          "label": "进程边缘的分发"
+        }
+      ]
+    },
+    {
+      "id": "ingress",
+      "type": "backend",
+      "label": "接入与身份",
+      "sublabel": "stoma · gate · accounts · adminline",
+      "pos": [
+        260,
+        159
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "对话核心",
+      "sublabel": "session · turn · model · prompt",
+      "pos": [
+        605,
+        159
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "caps",
+      "type": "backend",
+      "label": "能力",
+      "sublabel": "tools · warrant · skills · asr",
+      "pos": [
+        950,
+        159
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "sidecars",
+      "type": "cloud",
+      "label": "sidecars/",
+      "sublabel": "browser · ASR · OCR",
+      "pos": [
+        975,
+        40
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "data",
+      "type": "database",
+      "label": "数据与基础",
+      "sublabel": "pgpool · retrieval · credentials",
+      "pos": [
+        260,
+        278
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "界面",
+      "sublabel": "webui · slash",
+      "pos": [
+        605,
+        278
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "org",
+      "type": "backend",
+      "label": "组织与编排",
+      "sublabel": "agora · arrangement · learn",
+      "pos": [
+        950,
+        278
+      ],
+      "size": [
+        220,
+        64
+      ]
+    },
+    {
+      "id": "arch",
+      "type": "security",
+      "label": "arch/",
+      "sublabel": "规则焊进测试",
+      "pos": [
+        1180,
+        40
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "arch/10-boundary_test.go",
+          "label": "leaf 模块彼此从不 import"
+        },
+        {
+          "path": "arch/30-provide_test.go",
+          "label": "扫真实 Provide 点 + 死接线"
+        },
+        {
+          "path": "arch/50-heartwood_test.go",
+          "label": "heartwood 的准入闸"
+        }
+      ]
+    },
+    {
+      "id": "trunk",
+      "type": "messagebus",
+      "label": "trunk — 薄脊梁",
+      "sublabel": "能力注册表 · 生命周期定序器 · housekeeping 调度器",
+      "pos": [
+        260,
+        397
+      ],
+      "size": [
+        910,
+        64
+      ],
+      "sources": [
+        {
+          "path": "trunk/10-registry.go",
+          "label": "接口 → 唯一实现"
+        },
+        {
+          "path": "trunk/20-lifecycle.go",
+          "label": "按 Provides/Needs 拓扑启动"
+        },
+        {
+          "path": "trunk/30-housekeeping.go",
+          "label": "一个 worker，一条优先队列"
+        }
+      ]
+    },
+    {
+      "id": "heartwood",
+      "type": "backend",
+      "label": "heartwood",
+      "sublabel": "prompt · clock · files · scrub",
+      "pos": [
+        260,
+        516
+      ],
+      "size": [
+        430,
+        64
+      ],
+      "sources": [
+        {
+          "path": "heartwood/prompt/20-sanitize.go",
+          "label": "唯一一份 speaker 注入防御"
+        },
+        {
+          "path": "heartwood/clock/00-clock.go",
+          "label": "跨主机唯一时间刻度"
+        },
+        {
+          "path": "heartwood/scrub/scrub.go",
+          "label": "逐字节一致的凭证抹除"
+        }
+      ]
+    },
+    {
+      "id": "contract",
+      "type": "backend",
+      "label": "contract",
+      "sublabel": "能力接口 · 信封数据 · 共享语法",
+      "pos": [
+        740,
+        516
+      ],
+      "size": [
+        270,
+        64
+      ],
+      "sources": [
+        {
+          "path": "contract/00-doc.go",
+          "label": "什么才配进这里"
+        },
+        {
+          "path": "contract/84-flow.go",
+          "label": "FlowRegistry / TurnHandler"
+        },
+        {
+          "path": "contract/91-tool.go",
+          "label": "工具目录的信封"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "flow/ — 策略：某一类对话怎么编排",
+      "wraps": [
+        "flows"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "leaf/ — 30 个注册节点；彼此从不 import",
+      "wraps": [
+        "ingress",
+        "core",
+        "caps",
+        "data",
+        "ui",
+        "org"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "机制：系统能做什么",
+      "wraps": [
+        "trunk",
+        "heartwood",
+        "contract"
+      ],
+      "pad": 10
+    }
+  ],
+  "connections": [
+    {
+      "id": "events-in",
+      "from": "platforms",
+      "to": "ingress",
+      "label": "聊天事件",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "screened",
+      "from": "ingress",
+      "to": "flows",
+      "label": "过闸后按 session 攒批",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "turnspec",
+      "from": "flows",
+      "to": "core",
+      "label": "TurnSpec：身份 · prompt · 工具包",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDx": 80
+    },
+    {
+      "id": "tool-rounds",
+      "from": "core",
+      "to": "caps",
+      "label": "工具轮",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "sidecar-http",
+      "from": "caps",
+      "to": "sidecars",
+      "label": "HTTP",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "reply-out",
+      "from": "core",
+      "to": "ingress",
+      "label": "流式回复 → sink",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "wiring",
+      "from": "data",
+      "to": "trunk",
+      "label": "Provides / Needs",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "heartwood-modules",
+      "from": "heartwood",
+      "to": "trunk",
+      "label": "3 个包注册为模块",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "registry-keys",
+      "from": "trunk",
+      "to": "contract",
+      "label": "注册表的 key 就是能力接口",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "guard",
+      "from": "arch",
+      "to": "trunk",
+      "label": "把认可的连接图焊进测试",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "right"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "机制与策略分离",
+      "items": [
+        "系统能做什么，下沉成可插拔的模块",
+        "某类对话怎么编排，上浮成可替换的 flow"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "trunk 只做媒人，不做中介",
+      "items": [
+        "提供方在 Start 时注册一次，消费方在自己 wiring 时 Require 一次",
+        "此后调用点对点直连 —— 脊梁不在热路径上"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "会大声失败的边界",
+      "items": [
+        "leaf 模块彼此从不 import，heartwood 是唯一例外",
+        "sidecar 自带 go.mod，所以它根本够不到 contract"
+      ]
+    }
+  ]
+}

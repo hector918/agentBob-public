@@ -2,6 +2,12 @@
 
 `flow/` is where thin orchestration scripts live. "How a particular kind of conversation runs" belongs here and can be swapped out whole; "what the system can do" belongs to the module layer below and does not move. **Changing behaviour means adding or swapping a flow, not touching the mechanisms.**
 
+> **Interactive diagram** — [The life of one message](../diagrams/message-lifecycle.en.html) · [中文版](../diagrams/message-lifecycle.zh.html)
+> The full path of one chat event: gateway, fail-closed screening, batching, flow selection,
+> tool-bag authorization, the tool rounds, and the reply back out through the sink.
+
+[![The life of one message](../diagrams/message-lifecycle.en.preview.png)](../diagrams/message-lifecycle.en.html)
+
 ## Where it sits
 
 Five flow modules plus one shared library. Provides / Needs come from the approved connection graph in the architecture guards:

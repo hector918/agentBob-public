@@ -2,6 +2,11 @@
 
 `flow/` 是薄编排脚本的家。「某种对话怎么走」住在这里，可整条替换；「系统能做什么」住在下面的模块层，不动。**改行为 = 加一条流程或换一条流程，机制不动。**
 
+> **可交互图** — [一条消息的一生](../diagrams/message-lifecycle.zh.html) · [English](../diagrams/message-lifecycle.en.html)
+> 一条聊天事件的完整路径：网关、fail-closed 准入、攒批、选流程、工具包授权、工具轮，以及经由 sink 流回去的回复。
+
+[![一条消息的一生](../diagrams/message-lifecycle.zh.preview.png)](../diagrams/message-lifecycle.zh.html)
+
 ## 在架构中的位置
 
 五个流程模块 + 一个共享库。Provides / Needs 取自架构守卫里的已批准连接图：

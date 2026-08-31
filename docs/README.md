@@ -9,6 +9,7 @@ path for path.
 |---|---|
 | **English** | [Architecture overview](en/architecture.md) · [Deployment](en/deployment.md) |
 | **中文** | [架构总览](zh/architecture.md) · [部署](zh/deployment.md) |
+| **Diagrams · 图** | [Five layers](diagrams/architecture-layers.en.html) · [五层结构](diagrams/architecture-layers.zh.html) · [Life of one message](diagrams/message-lifecycle.en.html) · [一条消息的一生](diagrams/message-lifecycle.zh.html) |
 
 ---
 
@@ -23,7 +24,9 @@ docs/
 │         ├── modules/             the leaf modules
 │         ├── flows.md             the flow layer
 │         └── sidecars/            out-of-process services
-└── zh/  ─┘  (same paths, in Chinese · 同样的路径，中文)
+├── zh/  ─┘  (same paths, in Chinese · 同样的路径，中文)
+└── diagrams/     self-contained interactive HTML + the JSON they render from
+                  自包含可交互 HTML，以及渲染它们的 JSON 源
 ```
 
 Start with `architecture.md` — it explains the five layers and links onward to

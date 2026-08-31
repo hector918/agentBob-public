@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "agentbob — the life of one message",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1690,
+      817
+    ],
+    "views": [
+      {
+        "id": "ingress",
+        "label": "Ingress",
+        "focus": [
+          "platform",
+          "stoma",
+          "inbound",
+          "gate"
+        ],
+        "note": "Language is stamped, the screen is fail-closed, and a leading slash forks out of band before any turn exists."
+      },
+      {
+        "id": "selection",
+        "label": "Selection and authority",
+        "focus": [
+          "session",
+          "flow",
+          "tools"
+        ],
+        "note": "The router picks a path by scope; warrant is the single judge of what that identity may call."
+      },
+      {
+        "id": "tool-rounds",
+        "label": "Tool rounds",
+        "focus": [
+          "turn",
+          "model",
+          "tools"
+        ],
+        "note": "The turn core drives rounds between the model pool and authorized tool channels until a final answer arrives."
+      },
+      {
+        "id": "reply",
+        "label": "Reply and bookkeeping",
+        "focus": [
+          "flow",
+          "stoma",
+          "platform",
+          "session"
+        ],
+        "note": "Only an outcome that put something on the wire counts as answered."
+      }
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "platform",
+      "type": "external",
+      "label": "Chat platform"
+    },
+    {
+      "id": "stoma",
+      "type": "backend",
+      "label": "stoma"
+    },
+    {
+      "id": "inbound",
+      "type": "backend",
+      "label": "inbound"
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "gate"
+    },
+    {
+      "id": "session",
+      "type": "backend",
+      "label": "session"
+    },
+    {
+      "id": "flow",
+      "type": "backend",
+      "label": "flow-normal"
+    },
+    {
+      "id": "turn",
+      "type": "backend",
+      "label": "turn"
+    },
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "model pool"
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "tools + warrant"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 305,
+      "label": "Ingress"
+    },
+    {
+      "from": 315,
+      "to": 445,
+      "label": "Selection and authority"
+    },
+    {
+      "from": 455,
+      "to": 645,
+      "label": "Turn: tool rounds"
+    },
+    {
+      "from": 655,
+      "to": 770,
+      "label": "Reply"
+    }
+  ],
+  "messages": [
+    {
+      "id": "arrives",
+      "from": "platform",
+      "to": "stoma",
+      "y": 190,
+      "label": "message arrives",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fan-in",
+      "from": "stoma",
+      "to": "inbound",
+      "y": 224,
+      "label": "one event on the fanned-in bus"
+    },
+    {
+      "id": "screen",
+      "from": "inbound",
+      "to": "gate",
+      "y": 258,
+      "label": "screen (external sources only)",
+      "variant": "security"
+    },
+    {
+      "id": "pass",
+      "from": "gate",
+      "to": "inbound",
+      "y": 292,
+      "label": "pass — the only action that continues",
+      "variant": "return"
+    },
+    {
+      "id": "submit",
+      "from": "inbound",
+      "to": "session",
+      "y": 326,
+      "label": "submit: language stamped, slash forked out of band",
+      "variant": "emphasis"
+    },
+    {
+      "id": "drain",
+      "from": "session",
+      "to": "flow",
+      "y": 360,
+      "label": "drain the batch → first flow whose Accepts passes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "authorize",
+      "from": "flow",
+      "to": "tools",
+      "y": 394,
+      "label": "authorize the bag over (identity, catalog)",
+      "variant": "security"
+    },
+    {
+      "id": "bag",
+      "from": "tools",
+      "to": "flow",
+      "y": 428,
+      "label": "the tools this identity may call",
+      "variant": "return"
+    },
+    {
+      "id": "turnspec",
+      "from": "flow",
+      "to": "turn",
+      "y": 462,
+      "label": "TurnSpec: identity · prompt layers · tool bag",
+      "variant": "emphasis"
+    },
+    {
+      "id": "round-one",
+      "from": "turn",
+      "to": "model",
+      "y": 496,
+      "label": "round 1: pooled call"
+    },
+    {
+      "id": "tool-call",
+      "from": "model",
+      "to": "turn",
+      "y": 530,
+      "label": "tool call",
+      "variant": "return"
+    },
+    {
+      "id": "run-tool",
+      "from": "turn",
+      "to": "tools",
+      "y": 564,
+      "label": "run it in an authorized channel"
+    },
+    {
+      "id": "tool-result",
+      "from": "tools",
+      "to": "turn",
+      "y": 598,
+      "label": "result",
+      "variant": "return"
+    },
+    {
+      "id": "final",
+      "from": "model",
+      "to": "turn",
+      "y": 632,
+      "label": "final answer",
+      "variant": "return",
+      "note": "later rounds repeat this pair until the model stops calling tools"
+    },
+    {
+      "id": "outcome",
+      "from": "turn",
+      "to": "flow",
+      "y": 666,
+      "label": "outcome, classified",
+      "variant": "return"
+    },
+    {
+      "id": "sink",
+      "from": "flow",
+      "to": "stoma",
+      "y": 700,
+      "label": "resolve the sink, stream the reply",
+      "variant": "emphasis"
+    },
+    {
+      "id": "delivered",
+      "from": "stoma",
+      "to": "platform",
+      "y": 734,
+      "label": "reply lands in the chat",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "stoma",
+      "from": 185,
+      "to": 739,
+      "type": "backend"
+    },
+    {
+      "participant": "inbound",
+      "from": 219,
+      "to": 331,
+      "type": "backend"
+    },
+    {
+      "participant": "gate",
+      "from": 253,
+      "to": 297,
+      "type": "security"
+    },
+    {
+      "participant": "session",
+      "from": 321,
+      "to": 365,
+      "type": "backend"
+    },
+    {
+      "participant": "flow",
+      "from": 355,
+      "to": 705,
+      "type": "backend"
+    },
+    {
+      "participant": "tools",
+      "from": 389,
+      "to": 433,
+      "type": "backend"
+    },
+    {
+      "participant": "turn",
+      "from": 457,
+      "to": 671,
+      "type": "backend"
+    },
+    {
+      "participant": "model",
+      "from": 491,
+      "to": 637,
+      "type": "cloud"
+    },
+    {
+      "participant": "tools",
+      "from": 559,
+      "to": 603,
+      "type": "backend"
+    }
+  ]
+}
