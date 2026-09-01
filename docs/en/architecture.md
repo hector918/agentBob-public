@@ -4,13 +4,13 @@ agentbob is a self-hosted, IM-first AI agent written from scratch in Go. It conn
 
 The whole codebase is organised around one principle: **separate mechanism from policy**. "What the system can do" sinks into pluggable modules; "how a particular kind of conversation is orchestrated" floats up into flows that can be swapped out whole. Changing behaviour means adding a flow, not touching the mechanisms.
 
-> **Interactive diagram** — [Mechanism and policy in five layers](../diagrams/architecture-layers.en.html) · [中文版](../diagrams/architecture-layers.zh.html)
+> **Interactive diagram** — [Mechanism and policy in five layers](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html) · [中文版](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html)
 > A standalone HTML map of the layers, the module groups and the trunk wiring, with guided
 > views, search, relationship tracing and PNG/SVG export. Node evidence links back to real
-> files at a pinned revision. Rendered locally, or on GitHub Pages if enabled — a raw
-> `.html` link on github.com shows source rather than the page.
+> files at a pinned revision. The links open the live page; the image below is a static
+> snapshot for reading in place.
 
-[![Mechanism and policy in five layers](../diagrams/architecture-layers.en.preview.png)](../diagrams/architecture-layers.en.html)
+[![Mechanism and policy in five layers](../diagrams/architecture-layers.en.preview.png)](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html)
 
 ---
 

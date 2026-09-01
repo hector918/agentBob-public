@@ -9,15 +9,15 @@ tracing, guided views and PNG/SVG/WebM export.
 
 | Diagram · 图 | English | 中文 | Source |
 |---|---|---|---|
-| Mechanism and policy in five layers · 机制与策略的五层结构 | [html](architecture-layers.en.html) · [png](architecture-layers.en.preview.png) | [html](architecture-layers.zh.html) · [png](architecture-layers.zh.preview.png) | [`docs/en/architecture.md`](../en/architecture.md) |
-| The life of one message · 一条消息的一生 | [html](message-lifecycle.en.html) · [png](message-lifecycle.en.preview.png) | [html](message-lifecycle.zh.html) · [png](message-lifecycle.zh.preview.png) | [`docs/en/flows.md`](../en/flows.md) |
+| Mechanism and policy in five layers · 机制与策略的五层结构 | [html](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html) · [png](architecture-layers.en.preview.png) | [html](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html) · [png](architecture-layers.zh.preview.png) | [`docs/en/architecture.md`](../en/architecture.md) |
+| The life of one message · 一条消息的一生 | [html](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.en.html) · [png](message-lifecycle.en.preview.png) | [html](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.zh.html) · [png](message-lifecycle.zh.preview.png) | [`docs/en/flows.md`](../en/flows.md) |
 
-**Viewing · 怎么看.** GitHub serves a `.html` blob as source, not as a page. Clone the
-repo and open the file, or enable GitHub Pages for this repository. The `.preview.png`
-next to each one is a static snapshot for reading in place.
+**Viewing · 怎么看.** The `html` links above open the live pages on GitHub Pages. Reading
+this file on github.com instead, the `.preview.png` beside each page is a static snapshot;
+a raw `.html` blob there is served as source, not rendered.
 
-GitHub 会把 `.html` 当源码展示，不会渲染成页面。请 clone 下来本地打开，或为本仓库开启
-GitHub Pages。每张图旁边的 `.preview.png` 是可以就地阅读的静态快照。
+上面的 `html` 链接指向 GitHub Pages 上的在线页面。如果你是在 github.com 上读这个文件，
+每张图旁边的 `.preview.png` 是静态快照；在 github.com 上直接点 `.html` 得到的是源码而非页面。
 
 **Provenance · 出处.** The `.json` beside each page is the specification it renders from —
 typed, schema-validated, and the only thing edited by hand. The architecture spec also

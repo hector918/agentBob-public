@@ -2,11 +2,11 @@
 
 `flow/` is where thin orchestration scripts live. "How a particular kind of conversation runs" belongs here and can be swapped out whole; "what the system can do" belongs to the module layer below and does not move. **Changing behaviour means adding or swapping a flow, not touching the mechanisms.**
 
-> **Interactive diagram** — [The life of one message](../diagrams/message-lifecycle.en.html) · [中文版](../diagrams/message-lifecycle.zh.html)
+> **Interactive diagram** — [The life of one message](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.en.html) · [中文版](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.zh.html)
 > The full path of one chat event: gateway, fail-closed screening, batching, flow selection,
 > tool-bag authorization, the tool rounds, and the reply back out through the sink.
 
-[![The life of one message](../diagrams/message-lifecycle.en.preview.png)](../diagrams/message-lifecycle.en.html)
+[![The life of one message](../diagrams/message-lifecycle.en.preview.png)](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.en.html)
 
 ## Where it sits
 

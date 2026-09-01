@@ -42,11 +42,19 @@ flow/        流程——薄编排脚本，可整条替换。
 
 这样切的意义是**机制与策略分离**。系统「能做什么」在模块里；某种对话「怎么编排」在一条你可以整条换掉的流程里。
 
+**可交互系统图。** 两张，浏览器里直接看——缩放平移、搜索、追踪某条关系、按引导视图逐段读、导出 PNG/SVG：
+[五层结构](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html) ·
+[一条消息的一生](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.zh.html)
+*(English: [five layers](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html) ·
+[life of one message](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.en.html))*
+
+[![agentbob — 机制与策略的五层结构](docs/diagrams/architecture-layers.zh.preview.png)](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html)
+
 这不是一个靠 review 自觉维持的愿景，而是**焊在测试里的**。`arch/` 包持有已批准的模块连接图，任何模块增减一条依赖边都会让构建变红，直到这个改动在那里被 review 并批准。
 
 重依赖的部分（浏览器引擎、CUDA 推理、Python 生态）住在 `sidecars/`——独立进程，主二进制只通过 HTTP 与之对话，于是它们可以部署到别的硬件上而核心零改动。
 
-**→ 完整文档：[中文](docs/zh/architecture.md) · [English](docs/en/architecture.md)**
+**→ 完整文档：[中文](docs/zh/architecture.md) · [English](docs/en/architecture.md) · [系统图](https://github.com/hector918/agentBob-public/tree/main/docs/diagrams)**
 
 ---
 

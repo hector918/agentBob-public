@@ -9,7 +9,7 @@ path for path.
 |---|---|
 | **English** | [Architecture overview](en/architecture.md) · [Deployment](en/deployment.md) |
 | **中文** | [架构总览](zh/architecture.md) · [部署](zh/deployment.md) |
-| **Diagrams · 图** | [Five layers](diagrams/architecture-layers.en.html) · [五层结构](diagrams/architecture-layers.zh.html) · [Life of one message](diagrams/message-lifecycle.en.html) · [一条消息的一生](diagrams/message-lifecycle.zh.html) |
+| **Diagrams · 图** | [Five layers](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html) · [五层结构](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html) · [Life of one message](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.en.html) · [一条消息的一生](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.zh.html) |
 
 ---
 

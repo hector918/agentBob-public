@@ -4,12 +4,11 @@ agentbob 是一个自托管的、以即时通讯为第一入口的 AI agent，�
 
 整个代码库围绕一条原则组织：**机制与策略分离**。「能做什么」下沉成可插拔的模块，「某种对话怎么编排」上浮成可整条替换的流程。改行为等于加一条流程，机制不动。
 
-> **可交互图** — [机制与策略的五层结构](../diagrams/architecture-layers.zh.html) · [English](../diagrams/architecture-layers.en.html)
+> **可交互图** — [机制与策略的五层结构](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html) · [English](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html)
 > 一份自包含 HTML 系统图：五层、模块分组、主干接线，带引导视图、搜索、关系追踪与 PNG/SVG 导出。
-> 节点上的证据链接指回固定版本下的真实文件。本地打开即可；若仓库开了 GitHub Pages 也能直接访问——
-> 在 github.com 上直接点 `.html` 链接看到的是源码而不是页面。
+> 节点上的证据链接指回固定版本下的真实文件。链接直接打开在线页面；下面那张图是可以就地阅读的静态快照。
 
-[![机制与策略的五层结构](../diagrams/architecture-layers.zh.preview.png)](../diagrams/architecture-layers.zh.html)
+[![机制与策略的五层结构](../diagrams/architecture-layers.zh.preview.png)](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html)
 
 ---
 

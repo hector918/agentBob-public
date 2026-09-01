@@ -66,6 +66,15 @@ The point of the split is that **mechanism and policy come apart**. What the
 system *can do* lives in modules; how a particular kind of conversation is
 *orchestrated* lives in a flow you can swap out whole.
 
+**Interactive system maps.** Two of them, live in the browser — pan, zoom, search,
+trace a relationship, step through guided views, export PNG/SVG:
+[the five layers](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html) ·
+[the life of one message](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.en.html)
+*(中文：[五层结构](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.zh.html) ·
+[一条消息的一生](https://hector918.github.io/agentBob-public/docs/diagrams/message-lifecycle.zh.html))*
+
+[![agentbob — mechanism and policy in five layers](docs/diagrams/architecture-layers.en.preview.png)](https://hector918.github.io/agentBob-public/docs/diagrams/architecture-layers.en.html)
+
 This is not an aspiration enforced by review discipline — it is enforced by
 tests. The `arch/` package holds the approved module connection graph; any
 module that gains or loses a dependency edge turns the build red until the
@@ -75,7 +84,7 @@ Dependency-heavy work (a browser engine, CUDA inference, the Python ecosystem)
 lives in `sidecars/` — separate processes the main binary talks to over HTTP, so
 they can be deployed onto different hardware without touching the core.
 
-**→ Full documentation: [English](docs/en/architecture.md) · [中文](docs/zh/architecture.md)**
+**→ Full documentation: [English](docs/en/architecture.md) · [中文](docs/zh/architecture.md) · [Diagrams](https://github.com/hector918/agentBob-public/tree/main/docs/diagrams)**
 
 ---
 
