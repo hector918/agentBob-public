@@ -84,7 +84,7 @@ Dependency-heavy work (a browser engine, CUDA inference, the Python ecosystem)
 lives in `sidecars/` — separate processes the main binary talks to over HTTP, so
 they can be deployed onto different hardware without touching the core.
 
-**→ Full documentation: [English](docs/en/architecture.md) · [中文](docs/zh/architecture.md) · [Diagrams](https://github.com/hector918/agentBob-public/tree/main/docs/diagrams)**
+**→ Full documentation: [English](docs/en/architecture.md) · [中文](docs/zh/architecture.md) · [Diagrams](docs/diagrams/)**
 
 ---
 

@@ -54,7 +54,7 @@ flow/        流程——薄编排脚本，可整条替换。
 
 重依赖的部分（浏览器引擎、CUDA 推理、Python 生态）住在 `sidecars/`——独立进程，主二进制只通过 HTTP 与之对话，于是它们可以部署到别的硬件上而核心零改动。
 
-**→ 完整文档：[中文](docs/zh/architecture.md) · [English](docs/en/architecture.md) · [系统图](https://github.com/hector918/agentBob-public/tree/main/docs/diagrams)**
+**→ 完整文档：[中文](docs/zh/architecture.md) · [English](docs/en/architecture.md) · [系统图](docs/diagrams/)**
 
 ---
 
